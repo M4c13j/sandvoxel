@@ -1,0 +1,4 @@
+/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/imgui.dir
+/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/RaylibImGuiExample.dir
+/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/edit_cache.dir
+/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/rebuild_cache.dir
