@@ -4,6 +4,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
+#include <string>
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -12,7 +13,7 @@ static void glfw_error_callback(int error, const char* description)
 
 int main(int argc, char** argv)
 {
-    // Initialize raylib
+    // Initialize raylib ======================
     InitWindow(1200, 700, "Raylib + ImGui Example");
     SetTargetFPS(60);
 
@@ -21,7 +22,9 @@ int main(int argc, char** argv)
     if (!glfwInit())
         return 1;
 
-    GLFWwindow* window = glfwCreateWindow(600, 400, "Dawg", NULL, NULL);
+    // Imgui init =============================
+    // GLFWwindow* window = glfwCreateWindow(600, 400, "Dawg", NULL, NULL);
+    GLFWwindow* window = (GLFWwindow*) GetWindowHandle();
     if (!window) {
         glfwTerminate();
         return 1;
@@ -34,7 +37,6 @@ int main(int argc, char** argv)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -43,7 +45,7 @@ int main(int argc, char** argv)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    // Main loop
+    // Main loop ==============================
     while (!WindowShouldClose() && !glfwWindowShouldClose(window))
     {
         // Poll and handle user inputs
@@ -59,45 +61,30 @@ int main(int argc, char** argv)
         ImGui::Text("This is some useful text."); // Display some text
         ImGui::End();
 
-        bool show_demo_window = true;
-        bool show_another_window = true;
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-        if (show_demo_window) {
-            ImGui::ShowDemoWindow(&show_demo_window);
-        }
-
         {
             ImGui::Begin("Hello, world!");
             ImGui::Text("This is some useful text.");
+            ImGui::Text("Pufcio królik.");
             ImGui::End();
         }
-
-        // Show another window
-        {
-            ImGui::Begin("Another Window", nullptr, ImGuiWindowFlags_NoResize);
-            ImGui::Text("This is another window.");
-            ImGui::End();
-        }
-        glfwMakeContextCurrent(window);
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(window);
 
         // Rendering
-
         BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
-            DrawText(TextFormat("Fps: %d", GetFPS()), 10, 30, 20, DARKGRAY);
+        ClearBackground(RAYWHITE);
+        DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
+        DrawText(TextFormat("Fps: %d", GetFPS()), 10, 30, 20, DARKGRAY);
+
+        glfwMakeContextCurrent(window);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // Rendering
         EndDrawing();
+        glfwSwapBuffers(window);
 
     }
+    string dawg;
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
