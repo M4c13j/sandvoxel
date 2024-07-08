@@ -1,4 +1,3 @@
-/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/imgui.dir
-/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/RaylibImGuiExample.dir
-/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/edit_cache.dir
-/home/mac/gitrepos/rayilb-zabawa/build/CMakeFiles/rebuild_cache.dir
+/Users/maciej/Desktop/GitRepos/raylib-nauka/build/CMakeFiles/RaylibImGuiExample.dir
+/Users/maciej/Desktop/GitRepos/raylib-nauka/build/CMakeFiles/edit_cache.dir
+/Users/maciej/Desktop/GitRepos/raylib-nauka/build/CMakeFiles/rebuild_cache.dir
