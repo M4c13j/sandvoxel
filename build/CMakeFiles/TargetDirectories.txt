@@ -1,3 +1,0 @@
-/Users/maciej/Desktop/GitRepos/raylib-nauka/build/CMakeFiles/RaylibImGuiExample.dir
-/Users/maciej/Desktop/GitRepos/raylib-nauka/build/CMakeFiles/edit_cache.dir
-/Users/maciej/Desktop/GitRepos/raylib-nauka/build/CMakeFiles/rebuild_cache.dir

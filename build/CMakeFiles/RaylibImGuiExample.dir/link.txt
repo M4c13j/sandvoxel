@@ -1,1 +1,0 @@
-/opt/homebrew/bin/g++-14  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/RaylibImGuiExample.dir/main.cpp.o -o RaylibImGuiExample  -framework IOKit -framework Cocoa -framework OpenGL /opt/homebrew/lib/libraylib.dylib -L/opt/homebrew/Cellar/raylib/5.0/lib -lraylib
