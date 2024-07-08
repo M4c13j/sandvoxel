@@ -48,7 +48,9 @@ add_executable(${PROJECT_NAME}
 
 # APPLE related ============
 if (APPLE)
-    set(CMAKE_CXX_COMPILER "/opt/homebrew/bin/g++-11") #arm Mac stuff
+    set(CMAKE_CXX_COMPILER "/opt/homebrew/bin/g++-14") #arm Mac stuff
+    list(APPEND CMAKE_PREFIX_PATH "/usr/local" "/opt/homebrew")
+    find_package(raylib REQUIRED)
     target_link_libraries(${PROJECT_NAME} "-framework IOKit")
     target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
     target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
@@ -57,8 +59,6 @@ endif()
 # Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.
 target_link_libraries(${PROJECT_NAME}
     raylib
-    GL
-    glfw
 )
 
 # NO WAY. thanks chat GPT
