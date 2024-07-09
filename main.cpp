@@ -16,10 +16,13 @@ int main(int argc, char** argv)
         .projection = CAMERA_PERSPECTIVE              // Camera projection type
     };
 
+    Mesh mesh = GenMeshPlane(10, 10, 0, 0);
+    UploadMesh(&mesh, 0);
+
     // Main loop ==============================
     while (!WindowShouldClose())
     {
-        UpdateCamera(&camera, CAMERA_FREE);
+        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
         // Rendering
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -32,6 +35,7 @@ int main(int argc, char** argv)
                 DrawCubeWiresV((Vector3){ 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, DARKGREEN);
                 DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, YELLOW);
                 DrawGrid(10, 1.0f);
+
         EndMode3D();
         // Rendering
         EndDrawing();
