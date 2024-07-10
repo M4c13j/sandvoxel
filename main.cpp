@@ -17,7 +17,7 @@ int main(int argc, char** argv)
     };
 
     Mesh mesh = GenMeshPlane(10, 10, 0, 0);
-    UploadMesh(&mesh, 0);
+    Model model = LoadModelFromMesh(mesh);
 
     // Main loop ==============================
     while (!WindowShouldClose())
@@ -26,17 +26,27 @@ int main(int argc, char** argv)
         // Rendering
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
-        DrawText(TextFormat("Fps: %d", GetFPS()), 10, 30, 20, DARKGRAY);
 
         BeginMode3D(camera);
+                int ILE = 100;
+                for (int i=0;i<ILE;i++) {
+                    for (int j=0;j<ILE;j++) {
+                        for (int k=0;k<ILE;k++) {
+                            DrawCube((Vector3){i+10,j+10,k+10}, 1, 1, 1, PINK);
+                        }
+                    }
+                }
                 DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);
                 DrawCubeV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, PURPLE);
                 DrawCubeWiresV((Vector3){ 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, DARKGREEN);
-                DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, YELLOW);
-                DrawGrid(10, 1.0f);
+                DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 3.0f, 1.0f }, YELLOW);
+                // DrawGrid(10, 1.0f);
+                // DrawModel(model, (Vector3){0,0,0}, 1, BLACK);
 
-        EndMode3D();
+         EndMode3D();
+
+        DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
+        DrawText(TextFormat("Fps: %d", GetFPS()), 10, 30, 20, DARKGRAY);
         // Rendering
         EndDrawing();
     }
