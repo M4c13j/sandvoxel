@@ -45,6 +45,10 @@ add_executable(${PROJECT_NAME}
     main.cpp
 )
 
+# Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.
+target_link_libraries(${PROJECT_NAME}
+    raylib
+)
 
 # APPLE related ============
 if (APPLE)
@@ -56,9 +60,5 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
 endif()
 
-# Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.
-target_link_libraries(${PROJECT_NAME}
-    raylib
-)
 
 # NO WAY. thanks chat GPT
