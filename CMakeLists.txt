@@ -44,6 +44,14 @@ endif( DEFINED USE_IMGUI )
 # Add the executable, tutaj są pliki z projektu
 add_executable(${PROJECT_NAME}
     ${SOURCE_DIR}/main.cpp
+    ${SOURCE_DIR}/player.cpp
+    ${SOURCE_DIR}/block.cpp
+    ${SOURCE_DIR}/chunk.cpp
+    ${SOURCE_DIR}/config.cpp
+    ${SOURCE_DIR}/map.cpp
+    ${SOURCE_DIR}/renderer.cpp
+    # ${SOURCE_DIR}/.cpp
+    # ${SOURCE_DIR}/block.cpp
 )
 
 # Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.
