@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # set(USE_IMGUI false)
 
+set(SOURCE_DIR src)
 # Specify the paths to Dear ImGui and raylib
 set(IMGUI_PATH /home/mac/gitrepos/imgui)
 set(RAYLIB_PATH /usr/local)
@@ -42,7 +43,7 @@ endif( DEFINED USE_IMGUI )
 
 # Add the executable, tutaj są pliki z projektu
 add_executable(${PROJECT_NAME}
-    main.cpp
+    ${SOURCE_DIR}/main.cpp
 )
 
 # Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.
