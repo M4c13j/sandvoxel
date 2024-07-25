@@ -5,7 +5,7 @@
 class Chunk {
 public:
     Vector3 cords = {0,0,0};
-    int block[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
+    Block block[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
     int id = 0;
     Mesh chunkMesh;
 
