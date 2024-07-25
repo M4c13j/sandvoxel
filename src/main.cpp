@@ -5,6 +5,7 @@
 #include <map>
 #include <assert.h>
 #include "player.hpp"
+#include "chunk.hpp"
 
 int main(int argc, char** argv)
 {
@@ -40,10 +41,12 @@ int main(int argc, char** argv)
 
     SetModelMeshMaterial(&model, 0, 0);
 
-    Texture dirt_plank = LoadTexture("../resources/textures/dirt_plnk.png");
+    Texture dirt_plank = LoadTexture("../resources/textures/dirt_plank.png");
     Player player = Player();
 
     Chunk chunk = Chunk();
+    chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
+    chunk.generate_mesh();
 
     // Renderer renderer = Renderer();
     // Main loop ==============================
@@ -62,6 +65,7 @@ int main(int argc, char** argv)
             DrawGrid(100, 1.0f);
 
             DrawModel(model, (Vector3){.0f,.0f,.0f}, 1.0f, WHITE);
+            chunk.draw_chunk(dirt_plank);
          EndMode3D();
 
          // debug stays
