@@ -6,8 +6,8 @@ namespace config {
     constexpr int BLOCK_HEIGHT = 16;
 
     constexpr int MAP_SIZE = 256; // assuming square map
-    constexpr int CHUNK_SIZE = 16; // assuming square chunk (x and z)
-    constexpr int CHUNK_HEIGHT = 128; // height of chunk (y)
+    const int CHUNK_SIZE = 16; // assuming square chunk (x and z)
+    const int CHUNK_HEIGHT = 16; // height of chunk (y)
 
 
     constexpr Vector3 NORMALS[] = {
@@ -19,5 +19,5 @@ namespace config {
         {0, 0, -1}
     };
 
-    Mesh CUBE_MESH = GenMeshCube(1.0f, 1.0f, 1.0f);
+    // extern Mesh CUBE_MESH;
 }

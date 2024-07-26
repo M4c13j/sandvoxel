@@ -3,6 +3,9 @@ project(RaylibImGuiExample)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Release) <- comment out such lines
+
 # set(USE_IMGUI false)
 
 set(SOURCE_DIR src)
@@ -50,6 +53,7 @@ add_executable(${PROJECT_NAME}
     ${SOURCE_DIR}/config.hpp
     ${SOURCE_DIR}/map.cpp
     ${SOURCE_DIR}/renderer.cpp
+    ${SOURCE_DIR}/config.cpp
     # ${SOURCE_DIR}/.cpp
     # ${SOURCE_DIR}/block.cpp
 )

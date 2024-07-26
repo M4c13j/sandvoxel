@@ -44,10 +44,10 @@ int main(int argc, char** argv)
     Texture dirt_plank = LoadTexture("../resources/textures/dirt_plank.png");
     Player player = Player();
 
-    Chunk chunk = Chunk();
+    Chunk chunk = Chunk({0, -config::CHUNK_HEIGHT/2,0}, 0);
     chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_mesh();
-
+    // printf("DEBUGGER\n"); return 0;
     // Renderer renderer = Renderer();
     // Main loop ==============================
     while (!WindowShouldClose())
@@ -65,7 +65,10 @@ int main(int argc, char** argv)
             DrawGrid(100, 1.0f);
 
             DrawModel(model, (Vector3){.0f,.0f,.0f}, 1.0f, WHITE);
+
             chunk.draw_chunk(dirt_plank);
+
+            DrawBoundingBox(GetMeshBoundingBox(chunk.chunkMesh), BLACK);
          EndMode3D();
 
          // debug stays

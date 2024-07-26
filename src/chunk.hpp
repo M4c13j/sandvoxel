@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "config.hpp"
+#include "block.hpp"
 
 class Chunk {
 public:
@@ -11,7 +12,12 @@ public:
 
 
     Chunk();
+    Chunk(Vector3 cords) : cords(cords){};
+    Chunk(Vector3 cords, int id) : cords(cords), id(id) {};
     void generate_default_blocks(int airLevel);
     void draw_chunk(Texture &text);
     void generate_mesh();
+private:
+    void gen_mesh_block(float *vertPt, float *texPt, float *normalPt,
+        unsigned short *indiPt, Block &block, Vector3 pos, int index);
 };
