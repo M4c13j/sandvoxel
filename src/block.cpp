@@ -9,9 +9,9 @@ FaceData::FaceData(int verts, int tris) {
 
 Block::Block() {};
 
-constexpr FaceData FACE_DATA_VOXEL[] = {
-    {{23.0f}, {24.0f,24.0f}, {23.0f,24.0f}, {21}}
-};
+// constexpr FaceData FACE_DATA_VOXEL[] = {
+//     {{23.0f}, {24.0f,24.0f}, {23.0f,24.0f}, {21}}
+// };
 
 void Block::generate_face(FacePlacementData &face, config::Directions dir) {
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "raylib.h"
 #include "config.hpp"
 
@@ -7,6 +8,15 @@ struct FacePlacementData {
     float *texcoords;
     float *normals;
     unsigned short *indices;
+};
+
+struct FaceData {
+    std::vector<float> vertices;
+    std::vector<float> texcoords;
+    std::vector<float> normals;
+    std::vector<unsigned short> indices;
+
+    FaceData(int verts, int tris);
 };
 
 class Block {

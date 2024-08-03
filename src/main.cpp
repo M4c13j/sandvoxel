@@ -47,6 +47,7 @@ int main(int argc, char** argv)
     Chunk chunk = Chunk({0, -config::CHUNK_HEIGHT/2,0}, 0);
     chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_mesh();
+
     // printf("DEBUGGER\n"); return 0;
     // Renderer renderer = Renderer();
     // Main loop ==============================

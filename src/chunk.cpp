@@ -17,7 +17,7 @@ void Chunk::generate_default_blocks(int airLevel) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 // if (y > airLevel) continue; // earth level;
                 bool off = x+y+z % 2 == 0;
-               block[x][y][z] = Block(0, 0, {x,y,z});
+                block[x][y][z] = Block(0, 0, {x,y,z});
             }
         }
     }
@@ -55,7 +55,7 @@ void Chunk::generate_mesh() {
     int vertexCount = 0;
     int indexCount = 0;
 
-    cords = {0,0,0}; // DEBUG
+    // cords = {0,0,0}; // DEBUG
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
