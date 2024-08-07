@@ -29,5 +29,7 @@ public:
     Block();
     Block(int tx, int ty) : tx(tx), ty(ty) {};
     Block(int tx, int ty, Vector3 pos) : tx(tx), ty(ty), pos(pos) {};
-    void generate_face(FacePlacementData &data, config::Directions dir);
+    void generate_face(FacePlacementData &dest, config::Dir dir,
+        unsigned short ind_offset, Vector3 pos);
+    void draw_face(Vector3 pos, config::Dir dir);
 };

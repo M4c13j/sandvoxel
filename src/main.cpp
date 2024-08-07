@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "player.hpp"
 #include "chunk.hpp"
+#include "config.hpp"
 
 int main(int argc, char** argv)
 {
@@ -16,8 +17,6 @@ int main(int argc, char** argv)
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT); // Anti-asliasing and V-Sync
 
     Mesh mesh = GenMeshPlane(10, 10, 2, 2);
-    // ExportMeshAsCode(mesh, "mesh_code.txt");
-    ExportMesh(mesh, "./mesh_norm.obj");
     Model model = LoadModelFromMesh(mesh);
     Texture planktxt = LoadTexture("../resources/textures/planks_oak.png"); // NOTE: path relative to build/ :(
     Texture dirt     = LoadTexture("../resources/textures/dirt.png");       // NOTE: path relative to build/ :(
@@ -48,6 +47,7 @@ int main(int argc, char** argv)
     chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_mesh();
 
+    Block bb = Block(0,0);
     // printf("DEBUGGER\n"); return 0;
     // Renderer renderer = Renderer();
     // Main loop ==============================
@@ -65,10 +65,14 @@ int main(int argc, char** argv)
             DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 3.0f, 1.0f }, YELLOW);
             DrawGrid(100, 1.0f);
 
-            DrawModel(model, (Vector3){.0f,.0f,.0f}, 1.0f, WHITE);
+            // DrawModel(model, (Vector3){.0f,.0f,.0f}, 1.0f, WHITE);
 
-            chunk.draw_chunk(dirt_plank);
+            // chunk.draw_chunk(dirt_plank);
+            bb.draw_face({-10, 10, 10}, config::DIR_UP);
 
+            for (int dir = 0; dir < config::COUNT_DIR; dir++) {
+                bb.draw_face({-2*dir, 2, 0}, static_cast<config::Dir>(dir));
+            }
             DrawBoundingBox(GetMeshBoundingBox(chunk.chunkMesh), BLACK);
          EndMode3D();
 

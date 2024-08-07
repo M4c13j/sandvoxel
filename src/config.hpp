@@ -10,22 +10,17 @@ namespace config {
     constexpr int CHUNK_HEIGHT = 16; // height of chunk (y)
     constexpr int BLOCKS_IN_CHUNK = CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE;
 
-    enum Directions {
+    enum Dir {
         DIR_UP,
         DIR_DOWN,
         DIR_NORTH,
         DIR_SOUTH,
         DIR_EAST,
-        DIR_WEST
+        DIR_WEST,
+        COUNT_DIR
     };
 
-    constexpr Vector3 NORMALS[] = {
-        {1, 0, 0},
-        {-1, 0, 0},
-        {0, 1, 0},
-        {0, -1, 0},
-        {0, 0, 1},
-        {0, 0, -1}
-    };
+    const int VERTEX_DATA_PER_FACE = 3 * 4; // for vertices and normals
+    const int TEXTURE_DATA_PER_FACE = 2 * 4;
 
 }

@@ -50,7 +50,7 @@ void Chunk::generate_mesh() {
     float *vertices = (float*) RL_MALLOC(BLOCKS_IN_CHUNK * VALUES_PER_BLOCK * sizeof(float));
     float *texcoords = (float*) RL_MALLOC(BLOCKS_IN_CHUNK * TEXTURE_VALS_PER_BLOCK * sizeof(float));
     float *normals = (float*) RL_MALLOC(BLOCKS_IN_CHUNK * VALUES_PER_BLOCK * sizeof(float));
-    unsigned short *indices = (unsigned short *)malloc(BLOCKS_IN_CHUNK * INDICES_PER_BLOCK  * sizeof(unsigned short));
+    unsigned short *indices = (unsigned short *)RL_MALLOC(BLOCKS_IN_CHUNK * INDICES_PER_BLOCK  * sizeof(unsigned short));
 
     int vertexCount = 0;
     int indexCount = 0;
@@ -63,8 +63,8 @@ void Chunk::generate_mesh() {
                 gen_mesh_block(vertices + 3*vertexCount, texcoords + 2*vertexCount, normals + 3*vertexCount,
                     indices + 3*indexCount, block[x][y][z], startingPos, vertexCount);
 
-                printf("Cube gen: %d %d %d ", (int)startingPos.x,  (int)startingPos.y, (int)startingPos.z);
-                printf(" pos: %d %d %d. \n", x, y, z);
+                // printf("Cube gen: %d %d %d ", (int)startingPos.x,  (int)startingPos.y, (int)startingPos.z);
+                // printf(" pos: %d %d %d. \n", x, y, z);
                 vertexCount += 24;
                 indexCount += 12;
             }
