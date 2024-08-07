@@ -11,10 +11,11 @@ public:
     Mesh chunkMesh;
 
 
-    Chunk();
-    Chunk(Vector3 cords) : cords(cords){};
+    Chunk() {};
+    Chunk(Vector3 cords) : cords(cords) {};
     Chunk(Vector3 cords, int id) : cords(cords), id(id) {};
     void generate_default_blocks(int airLevel);
+    void check_visibility();
     void draw_chunk(Texture &text);
     void generate_mesh();
 private:

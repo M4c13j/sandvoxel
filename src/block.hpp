@@ -25,11 +25,21 @@ public:
     float ty = 0.0f; // Assuming: every face same texture for now
     Vector3 pos; // redundantne
     bool visible = false; // is face visible
+    enum Type {
+        Air,
+        Dirt,
+        Plank,
+        DirtPlank,
+        TypeCount
+    } type;
 
-    Block();
-    Block(int tx, int ty) : tx(tx), ty(ty) {};
-    Block(int tx, int ty, Vector3 pos) : tx(tx), ty(ty), pos(pos) {};
+    Block() {};
+    Block(Type type) : type(type) {};
+    Block(Type type, int tx, int ty) : type(type), tx(tx), ty(ty) {};
+    Block(Type type, int tx, int ty, Vector3 pos) : type(type), tx(tx), ty(ty), pos(pos) {};
     void generate_face(FacePlacementData &dest, config::Dir dir,
         unsigned short ind_offset, Vector3 pos);
     void draw_face(Vector3 pos, config::Dir dir);
 };
+
+extern const Vector3 FACE_NORMALS[6]; // normals by dir

@@ -13,7 +13,6 @@ FaceData::FaceData(int verts, int tris) {
     indices = std::vector<unsigned short>(tris * 3); // should be equal to verts / 3 (verts = tris * 3)
 }
 
-Block::Block() {};
 
 // constexpr FaceData FACE_DATA_VOXEL[] = {
 //     {{23.0f}, {24.0f,24.0f}, {23.0f,24.0f}, {21}}
@@ -75,7 +74,7 @@ const float FACE_TEXCOORDS[] = {
     0.0f, 1.0f
 };
 
-const float FACE_NORMALS[] = {
+const float FACE_NORMALS_RAW[] = {
     0.0f, 0.0f, 1.0f,
     0.0f, 0.0f, 1.0f,
     0.0f, 0.0f, 1.0f,
@@ -106,6 +105,15 @@ const unsigned short FACE_INDICES[] = {
     0, 1, 2, 0, 2, 3
 };
 
+const Vector3 FACE_NORMALS[] = {
+    {0.0f, 0.0f, 1.0f},
+    {0.0f, 0.0f,-1.0f},
+    {0.0f, 1.0f, 0.0f},
+    {0.0f,-1.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {-1.0f, 0.0f, 0.0f}
+};
+
 void Block::generate_face(FacePlacementData &dest, config::Dir dir,
         unsigned short ind_offset, Vector3 pos) {
     assert(dir < 6);
@@ -114,7 +122,7 @@ void Block::generate_face(FacePlacementData &dest, config::Dir dir,
     int off_texs = config::TEXTURE_DATA_PER_FACE * dir; // tex_coords * verts_per_face * faces
     // no tak, bo memcpy chce rozmiar struktury, a nie ilośc elementow :(
     std::copy_n(FACE_VERTICES  + off_vert_norm, config::VERTEX_DATA_PER_FACE,  dest.vertices);
-    std::copy_n(FACE_NORMALS   + off_vert_norm, config::VERTEX_DATA_PER_FACE,  dest.normals);
+    std::copy_n(FACE_NORMALS_RAW   + off_vert_norm, config::VERTEX_DATA_PER_FACE,  dest.normals);
     std::copy_n(FACE_TEXCOORDS + off_texs,      config::TEXTURE_DATA_PER_FACE, dest.texcoords);
     std::copy_n(FACE_INDICES, config::VERTEX_DATA_PER_FACE / 2, dest.indices);
     for (int i = 0; i < config::VERTEX_DATA_PER_FACE/3;i++) {
@@ -145,27 +153,21 @@ void Block::draw_face(Vector3 pos, config::Dir dir) {
     faceMesh.vertexCount = 4;
     UploadMesh(&faceMesh, false);
 
-    // static Material material = LoadMaterialDefault();
-    // material.maps[MATERIAL_MAP_DIFFUSE].texture = LoadDefa;
     static const Texture bt = LoadTexture("../resources/textures/dirt_plank.png");
     Model model = LoadModelFromMesh(faceMesh);
     model.materials[0] = LoadMaterialDefault();
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = bt;
-
-    // DEBUG: it may need to be uncommented
-    // SetModelMeshMaterial(&model, 0, 0);
-    // DrawModelEx(model, {0, 0, 0}, (Vector3){0, 0, 0},
-    //             0, (Vector3){1, 1, 1}, WHITE);
-
+    // DEBUG ========
     printf("[Face drawn] dir: %d, pos: {%f, %f, %f}, \n",
         dir, pos.x, pos.y, pos.z);
-
     for (int i = 0; i < 4; i++) {
         DrawSphere({vertices[3*i], vertices[3*i+1], vertices[3*i+2]}, 0.1, GREEN);
         printf("\tp%d: %f %f %fi\n", i, vertices[3*i], vertices[3*i+1], vertices[3*i+2]);
     }
-    DrawModel(model, {0,0,0}, 1, WHITE);
     DrawBoundingBox(GetModelBoundingBox(model), PURPLE);
+    // DEBUG ========
+
+    DrawModel(model, {0,0,0}, 1, WHITE);
 
     UnloadModel(model);
 }

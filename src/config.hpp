@@ -11,10 +11,10 @@ namespace config {
     constexpr int BLOCKS_IN_CHUNK = CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE;
 
     enum Dir {
+        DIR_SOUTH = 0,
+        DIR_NORTH,
         DIR_UP,
         DIR_DOWN,
-        DIR_NORTH,
-        DIR_SOUTH,
         DIR_EAST,
         DIR_WEST,
         COUNT_DIR

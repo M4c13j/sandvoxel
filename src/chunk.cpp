@@ -9,7 +9,6 @@
 #include "raylib.h"
 #include "raymath.h"
 
-Chunk::Chunk() {;}
 
 void Chunk::generate_default_blocks(int airLevel) {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
@@ -17,7 +16,7 @@ void Chunk::generate_default_blocks(int airLevel) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 // if (y > airLevel) continue; // earth level;
                 bool off = x+y+z % 2 == 0;
-                block[x][y][z] = Block(0, 0, {x,y,z});
+                block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
             }
         }
     }
@@ -41,6 +40,16 @@ void Chunk::draw_chunk(Texture &text) {
     // UnloadModel(model);
 }
 
+void Chunk::check_visibility() {
+    for (int x = 0; x < config::CHUNK_SIZE; x++) {
+        for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
+            for (int z = 0; z < config::CHUNK_SIZE; z++) {
+                // return 0;
+            }
+        }
+    }
+
+}
 void Chunk::generate_mesh() {
     constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     constexpr int VALUES_PER_BLOCK = 24 * 3;
