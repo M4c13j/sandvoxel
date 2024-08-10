@@ -14,9 +14,13 @@ void Chunk::generate_default_blocks(int airLevel) {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                // if (y > airLevel) continue; // earth level;
-                bool off = x+y+z % 2 == 0;
-                block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
+                if (y < airLevel) {
+                    block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
+                    block[x][y][z].visible = false;
+                } else {
+                    block[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
+                    block[x][y][z].visible = true;
+                }
             }
         }
     }
@@ -40,16 +44,49 @@ void Chunk::draw_chunk(Texture &text) {
     // UnloadModel(model);
 }
 
-void Chunk::check_visibility() {
-    for (int x = 0; x < config::CHUNK_SIZE; x++) {
-        for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
-            for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                // return 0;
+// returns queue of pointer to those blocks
+std::queue<Block*> Chunk::get_visible_queue() {
+    std::queue<Block*> vis;
+    for (int x = 0; x < config::CHUNK_SIZE; x++)
+        for (int y = 0; y < config::CHUNK_HEIGHT; y++)
+            for (int z = 0; z < config::CHUNK_SIZE; z++)
+                if (block[x][y][z].visible)
+                    vis.push(&block[x][y][z]);
+    return vis;
+}
+
+bool is_in_chunk(Cord pos) {
+    return (pos.x < config::CHUNK_SIZE && pos.x >= 0) &&
+        (pos.y < config::CHUNK_HEIGHT && pos.y >= 0) &&
+        (pos.z < config::CHUNK_SIZE && pos.z >= 0);
+}
+
+void Chunk::update_visibility() {
+    std::queue<Block*> queue = get_visible_queue(); // for now, only Air iss visible
+    assert(!queue.empty());
+
+    while (!queue.empty()) {
+        Block *akt = queue.front(); queue.pop();
+
+        printf("Block: %d, %d, %d\n", akt->pos.x, akt->pos.y, akt->pos.z);
+        if (akt->type != Block::Air) {
+            akt->visible = true;
+        }
+        else {
+            for (int dir = 0; dir < COUNT_DIR; dir++) {
+                Cord nextPos = akt->pos + FACE_NORMALS[dir];
+                if (is_in_chunk(nextPos)) {
+                    Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
+                    if (!nextBlock->visible) {
+                        nextBlock->visible = true;
+                        queue.push(nextBlock);
+                    }
+                }
             }
         }
     }
-
 }
+
 void Chunk::generate_mesh() {
     constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     constexpr int VALUES_PER_BLOCK = 24 * 3;
@@ -61,14 +98,32 @@ void Chunk::generate_mesh() {
     float *normals = (float*) RL_MALLOC(BLOCKS_IN_CHUNK * VALUES_PER_BLOCK * sizeof(float));
     unsigned short *indices = (unsigned short *)RL_MALLOC(BLOCKS_IN_CHUNK * INDICES_PER_BLOCK  * sizeof(unsigned short));
 
+    FacePlacementData placementData = {vertices, texcoords, normals, indices, 0};
     int vertexCount = 0;
     int indexCount = 0;
 
-    // cords = {0,0,0}; // DEBUG
-    for (int x = 0; x < config::CHUNK_SIZE; x++) {
+    std::queue<Block*> queue = get_visible_queue();
+    // wish I could foreach or have flexibility from java to use queue as array.
+    while (!queue.empty()) {
+        Block *curr = queue.front(); queue.pop();
+        for (int dir = 0; dir < COUNT_DIR; dir++) {
+            Cord nextPos = curr->pos + FACE_NORMALS[dir];
+            Dir actualDir = static_cast<Dir>(dir); // goofy ahh
+            if (is_in_chunk(nextPos)) {// bez sensu, bo nie zlepia scian
+                Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
+                if (nextBlock->visible) {
+                    nextBlock->generate_face(placementData, actualDir, curr->pos);
+                    placementData.advance();
+                }
+            }
+        }
+    }
+
+    /*for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Vector3 startingPos = Vector3Add((Vector3){x,y,z}, cords); // goofy ass
+                Cord startingPos = Cord(x, y, z) + cords;
+                // Vector3 startingPos = Vector3Add((Vector3){x,y,z}, cords); // goofy ass
                 gen_mesh_block(vertices + 3*vertexCount, texcoords + 2*vertexCount, normals + 3*vertexCount,
                     indices + 3*indexCount, block[x][y][z], startingPos, vertexCount);
 
@@ -78,14 +133,10 @@ void Chunk::generate_mesh() {
                 indexCount += 12;
             }
         }
-    }
+    }*/
 
+    UnloadMesh(chunkMesh);
     chunkMesh = { 0 };
-
-    // free(chunkMesh.vertices);
-    // free(chunkMesh.texcoords);
-    // free(chunkMesh.normals);
-    // free(chunkMesh.indices);
 
     chunkMesh.vertices = vertices;
     chunkMesh.texcoords = texcoords;

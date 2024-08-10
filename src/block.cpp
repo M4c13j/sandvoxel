@@ -6,14 +6,6 @@
 #include <numeric>
 #include <algorithm>
 
-FaceData::FaceData(int verts, int tris) {
-    vertices  = std::vector<float>(verts * 3);
-    texcoords = std::vector<float>(verts * 2);
-    normals = std::vector<float>(verts * 3);
-    indices = std::vector<unsigned short>(tris * 3); // should be equal to verts / 3 (verts = tris * 3)
-}
-
-
 // constexpr FaceData FACE_DATA_VOXEL[] = {
 //     {{23.0f}, {24.0f,24.0f}, {23.0f,24.0f}, {21}}
 // };
@@ -105,46 +97,42 @@ const unsigned short FACE_INDICES[] = {
     0, 1, 2, 0, 2, 3
 };
 
-const Vector3 FACE_NORMALS[] = {
-    {0.0f, 0.0f, 1.0f},
-    {0.0f, 0.0f,-1.0f},
-    {0.0f, 1.0f, 0.0f},
-    {0.0f,-1.0f, 0.0f},
-    {1.0f, 0.0f, 0.0f},
-    {-1.0f, 0.0f, 0.0f}
-};
 
-void Block::generate_face(FacePlacementData &dest, config::Dir dir,
-        unsigned short ind_offset, Vector3 pos) {
+// Modifies dest pointers.
+void Block::generate_face(FacePlacementData &dest, Dir dir, Cord pos) {
     assert(dir < 6);
 
-    int off_vert_norm = config::VERTEX_DATA_PER_FACE * dir; // vert_data * vert_per_face * faces
-    int off_texs = config::TEXTURE_DATA_PER_FACE * dir; // tex_coords * verts_per_face * faces
+    int off_vert_norm = VERTEX_DATA_PER_FACE * dir; // vert_data * vert_per_face * faces
+    int off_texs = TEXTURE_DATA_PER_FACE * dir; // tex_coords * verts_per_face * faces
     // no tak, bo memcpy chce rozmiar struktury, a nie ilośc elementow :(
-    std::copy_n(FACE_VERTICES  + off_vert_norm, config::VERTEX_DATA_PER_FACE,  dest.vertices);
-    std::copy_n(FACE_NORMALS_RAW   + off_vert_norm, config::VERTEX_DATA_PER_FACE,  dest.normals);
-    std::copy_n(FACE_TEXCOORDS + off_texs,      config::TEXTURE_DATA_PER_FACE, dest.texcoords);
-    std::copy_n(FACE_INDICES, config::VERTEX_DATA_PER_FACE / 2, dest.indices);
-    for (int i = 0; i < config::VERTEX_DATA_PER_FACE/3;i++) {
+    std::copy_n(FACE_VERTICES  + off_vert_norm, VERTEX_DATA_PER_FACE,  dest.vertices);
+    std::copy_n(FACE_NORMALS_RAW   + off_vert_norm, VERTEX_DATA_PER_FACE,  dest.normals);
+    std::copy_n(FACE_TEXCOORDS + off_texs,      TEXTURE_DATA_PER_FACE, dest.texcoords);
+    std::copy_n(FACE_INDICES, VERTEX_DATA_PER_FACE / 2, dest.indices);
+    for (int i = 0; i < VERTEX_DATA_PER_FACE/3;i++) {
         dest.vertices[3*i + 0] += pos.x;
         dest.vertices[3*i + 1] += pos.y;
         dest.vertices[3*i + 2] += pos.z;
     }
     for(int i = 0; i < 6; i++) {
-        dest.indices[i] += ind_offset;
+        dest.indices[i] += dest.indicesOffset;
     }
+    dest.indices   += VERTEX_DATA_PER_FACE;
+    dest.vertices  += VERTEX_DATA_PER_FACE;
+    dest.texcoords += VERTEX_DATA_PER_FACE;
+    dest.normals   += VERTEX_DATA_PER_FACE;
 }
 
-void Block::draw_face(Vector3 pos, config::Dir dir) {
-    float *vertices = (float*) RL_MALLOC(config::VERTEX_DATA_PER_FACE * sizeof(float));
-    float *texcoords = (float*) RL_MALLOC(config::TEXTURE_DATA_PER_FACE* sizeof(float));
-    float *normals = (float*) RL_MALLOC(config::VERTEX_DATA_PER_FACE * sizeof(float));
-    unsigned short *indices = (unsigned short *)RL_MALLOC(config::VERTEX_DATA_PER_FACE / 2  * sizeof(unsigned short));
+void Block::draw_face(Cord pos, Dir dir) {
+    float *vertices = (float*) RL_MALLOC(VERTEX_DATA_PER_FACE * sizeof(float));
+    float *texcoords = (float*) RL_MALLOC(TEXTURE_DATA_PER_FACE* sizeof(float));
+    float *normals = (float*) RL_MALLOC(VERTEX_DATA_PER_FACE * sizeof(float));
+    unsigned short *indices = (unsigned short *)RL_MALLOC(VERTEX_DATA_PER_FACE / 2  * sizeof(unsigned short));
 
     Mesh faceMesh = { 0 };
 
-    FacePlacementData ptrs = (FacePlacementData){vertices, texcoords, normals, indices};
-    generate_face(ptrs, dir, 0, pos);
+    FacePlacementData ptrs = (FacePlacementData){vertices, texcoords, normals, indices, 0};
+    generate_face(ptrs, dir, pos);
     faceMesh.vertices = vertices;
     faceMesh.texcoords = texcoords;
     faceMesh.normals = normals;
@@ -158,8 +146,8 @@ void Block::draw_face(Vector3 pos, config::Dir dir) {
     model.materials[0] = LoadMaterialDefault();
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = bt;
     // DEBUG ========
-    printf("[Face drawn] dir: %d, pos: {%f, %f, %f}, \n",
-        dir, pos.x, pos.y, pos.z);
+    // printf("[Face drawn] dir: %d, pos: {%f, %f, %f}, \n",
+    //     dir, pos.x, pos.y, pos.z);
     for (int i = 0; i < 4; i++) {
         DrawSphere({vertices[3*i], vertices[3*i+1], vertices[3*i+2]}, 0.1, GREEN);
         printf("\tp%d: %f %f %fi\n", i, vertices[3*i], vertices[3*i+1], vertices[3*i+2]);
