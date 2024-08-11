@@ -16,12 +16,11 @@ public:
     Chunk(Vector3 cords) : cords(cords) {};
     Chunk(Vector3 cords, int id) : cords(cords), id(id) {};
     void generate_default_blocks(int airLevel);
-    std::queue<Block*> get_visible_queue();
+    std::queue<Block*> get_transparent();
     void update_visibility(); // whole chunk
     void update_visibility_block(int x, int y, int z);
     void draw_chunk(Texture &text);
     void generate_mesh();
-private:
     void gen_mesh_block(float *vertPt, float *texPt, float *normalPt,
         unsigned short *indiPt, Block &block, Vector3 pos, int index);
 };

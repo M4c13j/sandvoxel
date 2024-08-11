@@ -68,12 +68,12 @@ int main(int argc, char** argv)
 
             // DrawModel(model, (Vector3){.0f,.0f,.0f}, 1.0f, WHITE);
 
-            // chunk.draw_chunk(dirt_plank);
-            bb.draw_face({-10, 10, 10}, DIR_UP);
+            chunk.draw_chunk(dirt_plank);
+            // bb.draw_face({-10, 10, 10}, DIR_UP);
 
-            for (int dir = 0; dir < COUNT_DIR; dir++) {
-                bb.draw_face({-2*dir, 2, 0}, static_cast<Dir>(dir));
-            }
+            // for (int dir = 0; dir < COUNT_DIR; dir++) {
+            //     bb.draw_face({-2*dir, 2, 0}, static_cast<Dir>(dir));
+            // }
             DrawBoundingBox(GetMeshBoundingBox(chunk.chunkMesh), BLACK);
          EndMode3D();
 

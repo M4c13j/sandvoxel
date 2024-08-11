@@ -117,10 +117,6 @@ void Block::generate_face(FacePlacementData &dest, Dir dir, Cord pos) {
     for(int i = 0; i < 6; i++) {
         dest.indices[i] += dest.indicesOffset;
     }
-    dest.indices   += VERTEX_DATA_PER_FACE;
-    dest.vertices  += VERTEX_DATA_PER_FACE;
-    dest.texcoords += VERTEX_DATA_PER_FACE;
-    dest.normals   += VERTEX_DATA_PER_FACE;
 }
 
 void Block::draw_face(Cord pos, Dir dir) {
