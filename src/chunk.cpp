@@ -16,10 +16,8 @@ void Chunk::generate_default_blocks(int airLevel) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 if (y < airLevel) {
                     block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
-                    block[x][y][z].visible = false;
                 } else {
                     block[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
-                    block[x][y][z].visible = true;
                 }
             }
         }
@@ -44,16 +42,6 @@ void Chunk::draw_chunk(Texture &text) {
     // UnloadModel(model);
 }
 
-// returns queue of pointer to those blocks
-std::queue<Block*> Chunk::get_transparent() {
-    std::queue<Block*> vis;
-    for (int x = 0; x < config::CHUNK_SIZE; x++)
-        for (int y = 0; y < config::CHUNK_HEIGHT; y++)
-            for (int z = 0; z < config::CHUNK_SIZE; z++)
-                if (block[x][y][z].is_transparent())
-                    vis.push(&block[x][y][z]);
-    return vis;
-}
 
 inline bool is_in_chunk(Cord pos) {
     return (pos.x < config::CHUNK_SIZE && pos.x >= 0) &&
@@ -61,35 +49,59 @@ inline bool is_in_chunk(Cord pos) {
         (pos.z < config::CHUNK_SIZE && pos.z >= 0);
 }
 
-void Chunk::update_visibility() {
-    std::queue<Block*> queue = get_transparent(); // for now, only Air iss visible
-    assert(!queue.empty());
+int Chunk::set_visible_faces() {
+    int visCount = 0;
+    for (int x = 0; x < config::CHUNK_SIZE; x++) {
+        for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
+            for (int z = 0; z < config::CHUNK_SIZE; z++) {
+                Block *curr = &block[x][y][z];
+                curr->visible.reset();
+                if (curr->type == Block::Air) {
+                    continue; // do not draw Air
+                }
 
-    while (!queue.empty()) {
-        Block *akt = queue.front(); queue.pop();
-
-        // printf("Block: %d, %d, %d\n", akt->pos.x, akt->pos.y, akt->pos.z);
-        if (akt->type != Block::Air) {
-            akt->visible = true;
-        }
-        else {
-            for (int dir = 0; dir < COUNT_DIR; dir++) {
-                Cord nextPos = akt->pos + FACE_NORMALS[dir];
-                if (is_in_chunk(nextPos)) {
-                    Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
-                    if (!nextBlock->visible) {
-                        nextBlock->visible = true;
-                        if (!akt->is_transparent()) queue.push(nextBlock);
+                Cord pos{x,y,z};
+                for (int dir = 0; dir < COUNT_DIR; dir++) {
+                    Cord nextPos = pos + FACE_NORMALS[dir];
+                    if (is_in_chunk(nextPos) &&  get_block(nextPos)->type == Block::Air) {
+                        curr->visible[dir] = true;
+                        visCount++;
                     }
                 }
             }
         }
     }
+    return visCount;
+}
+
+
+
+//temoprarily disabled
+void Chunk::update_visibility() {
+    printf("GAYASS\n\n\n");
+    inverse_dir(DIR_DOWN);
+    // std::queue<Block*> queue = get_transparent(); // for now, only Air iss visible
+    // assert(!queue.empty());
+
+    // while (!queue.empty()) {
+    //     Block *akt = queue.front(); queue.pop();
+
+    //     for (int dir = 0; dir < COUNT_DIR; dir++) {
+    //         Cord nextPos = akt->pos + FACE_NORMALS[dir];
+    //         if (is_in_chunk(nextPos)) {
+    //             Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
+    //             Dir inversedDir = inverse_dir(static_cast<Dir>(dir)); // todo: weird af
+    //             if (!nextBlock->is_transparent()) {
+    //                 nextBlock->visible[inversedDir] = true;
+    //                 visibleFaces++;
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 void Chunk::generate_mesh() {
-    std::queue<Block*> queue = get_transparent();
-    const int FACES_TO_DRAW = queue.size() * 6;
+    const int FACES_TO_DRAW = set_visible_faces();
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * FACES_TO_DRAW;
     const int TEXTURE_DATA_TOTAL = TEXTURE_DATA_PER_FACE * FACES_TO_DRAW;
@@ -105,23 +117,37 @@ void Chunk::generate_mesh() {
     int indexCount = 0;
 
     // wish I could foreach or have flexibility from java to use queue as array.
-    while (!queue.empty()) {
-        Block *curr = queue.front(); queue.pop();
-        for (int dir = 0; dir < COUNT_DIR; dir++) {
-            Cord nextPos = curr->pos + FACE_NORMALS[dir];
-            Dir actualDir = static_cast<Dir>(dir); // goofy ahh
-            if (is_in_chunk(nextPos)) {// bez sensu, bo nie zlepia scian
-                Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
-                if (nextBlock->visible || 1) {
-                    curr->generate_face(placementData, actualDir, curr->pos);
-                    placementData.advance_face();
-                    vertexCount += 4; // vert count
-                    indexCount += 2; //tri count
-                    // break;
+    for (int x = 0; x < config::CHUNK_SIZE; x++) {
+        for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
+            for (int z = 0; z < config::CHUNK_SIZE; z++) {
+                Block *curr = &block[x][y][z];
+                for (int dir = 0; dir < COUNT_DIR; dir++) {
+                    if (curr->visible[dir]) {
+                        curr->generate_face(placementData, static_cast<Dir>(dir), {x,y,z});
+                        placementData.advance_face();
+                        vertexCount += 4;
+                        indexCount += 2;
+                    }
                 }
             }
         }
     }
+    //    Block *curr = queue.front(); queue.pop();
+    //     for (int dir = 0; dir < COUNT_DIR; dir++) {
+    //         Cord nextPos = curr->pos + FACE_NORMALS[dir];
+    //         Dir actualDir = static_cast<Dir>(dir); // goofy ahh
+    //         if (is_in_chunk(nextPos)) {// bez sensu, bo nie zlepia scian
+    //             Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
+    //             if (nextBlock->visible[0] || 1) {
+    //                 curr->generate_face(placementData, actualDir, curr->pos);
+    //                 placementData.advance_face();
+    //                 vertexCount += 4; // vert count
+    //                 indexCount += 2; //tri count
+    //                 // break;
+    //             }
+    //         }
+    //     }
+    // }
 
     /*for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
@@ -139,7 +165,7 @@ void Chunk::generate_mesh() {
         }
     }*/
 
-    UnloadMesh(chunkMesh);
+    // UnloadMesh(chunkMesh);
     chunkMesh = { 0 };
 
     chunkMesh.vertices = vertices;

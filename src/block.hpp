@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <bitset>
+#include <cassert>
 #include "raylib.h"
 #include "config.hpp"
 
@@ -97,5 +98,8 @@ public:
 };
 
 inline Dir inverse_dir(Dir dir) {
-    return static_cast<Dir>((dir + COUNT_DIR / 2) % COUNT_DIR);
+    // auto val = [](int x) {return !(x%2) + x - x%2;};
+    // for (int i = 0; i < 3; i++)
+    //     assert(val(2*i) == 2*i+1 && val(2*i+1) == 2*i);
+    return static_cast<Dir>(!(dir%2) + dir - dir%2);
 }
