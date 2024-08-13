@@ -44,7 +44,8 @@ int main(int argc, char** argv)
     Player player = Player();
 
     Chunk chunk = Chunk({0, -config::CHUNK_HEIGHT/2,0}, 0);
-    chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
+    // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
+    chunk.generate_perlin();
     chunk.update_visibility();
     chunk.generate_mesh();
 
@@ -58,6 +59,8 @@ int main(int argc, char** argv)
         // Rendering
         BeginDrawing();
         ClearBackground(RAYWHITE);
+
+        chunk.generate_mesh();
 
         BeginMode3D(player.camera);
             DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);

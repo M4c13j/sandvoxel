@@ -15,6 +15,7 @@ public:
     Chunk(Vector3 cords) : cords(cords) {};
     Chunk(Vector3 cords, int id) : cords(cords), id(id) {};
     void generate_default_blocks(int airLevel);
+    void generate_perlin();
     inline Block *get_block(Cord pos) {return &block[pos.x][pos.y][pos.z];}
     int set_visible_faces(); // fills visible array of blocks, returns num of visible faces
     void update_visibility(); // whole chunk
