@@ -6,16 +6,17 @@
 
 class Chunk {
 public:
-    Vector3 cords = {0,0,0};
+    Cord cords = {0,0,0}; // x,z - grid. y - height offset
     Block block[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
     int id = 0;
     Mesh chunkMesh = { 0 };
 
     Chunk() {};
-    Chunk(Vector3 cords) : cords(cords) {};
-    Chunk(Vector3 cords, int id) : cords(cords), id(id) {};
+    Chunk(Cord cords) : cords(cords) {};
+    Chunk(Cord cords, int id) : cords(cords), id(id) {};
+    ~Chunk() {}
     void generate_default_blocks(int airLevel);
-    void generate_perlin();
+    void generate_perlin(uint_fast32_t seed);
     inline Block *get_block(Cord pos) {return &block[pos.x][pos.y][pos.z];}
     int set_visible_faces(); // fills visible array of blocks, returns num of visible faces
     void update_visibility(); // whole chunk

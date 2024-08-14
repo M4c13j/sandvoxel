@@ -51,7 +51,7 @@ add_executable(${PROJECT_NAME}
     ${SOURCE_DIR}/block.cpp
     ${SOURCE_DIR}/chunk.cpp
     ${SOURCE_DIR}/config.hpp
-    ${SOURCE_DIR}/map.cpp
+    ${SOURCE_DIR}/world.cpp
     ${SOURCE_DIR}/renderer.cpp
     ${SOURCE_DIR}/config.cpp
     # ${SOURCE_DIR}/.cpp

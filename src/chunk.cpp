@@ -24,13 +24,13 @@ void Chunk::generate_default_blocks(int airLevel) {
     }
 }
 
-void Chunk::generate_perlin() {
-    const siv::PerlinNoise::seed_type seed = 12414u;//(uint_fast16_t) GetMousePosition().x;
-    const siv::PerlinNoise perlin{seed};
+void Chunk::generate_perlin(uint_fast32_t seed) {
+    const siv::PerlinNoise::seed_type seedG = seed;//(uint_fast16_t) GetMousePosition().x;
+    const siv::PerlinNoise perlin{seedG};
 
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int z = 0; z < config::CHUNK_SIZE; z++) {
-            int glevel = perlin.noise2D_01(x*0.1, z*0.1) * config::CHUNK_HEIGHT;
+            int glevel = perlin.noise2D_01((x+cords.x)*0.1, (z+cords.z)*0.1) * config::CHUNK_HEIGHT;
             for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
                 if (y < glevel) {
                     block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});

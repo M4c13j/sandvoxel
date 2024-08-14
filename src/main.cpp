@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "player.hpp"
 #include "chunk.hpp"
+#include "world.hpp"
 #include "config.hpp"
 
 int main(int argc, char** argv)
@@ -45,11 +46,16 @@ int main(int argc, char** argv)
 
     Chunk chunk = Chunk({0, -config::CHUNK_HEIGHT/2,0}, 0);
     // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
-    chunk.generate_perlin();
+    chunk.generate_perlin(2137u);
     chunk.update_visibility();
     chunk.generate_mesh();
 
     Block bb = Block(Block::DirtPlank, 0,0);
+
+    World world = World(10, 10);
+    world.generate_perlin_chunks(2137u);
+    world.mesh_all_chunks();
+
     // printf("DEBUGGER\n"); return 0;
     // Renderer renderer = Renderer();
     // Main loop ==============================
@@ -72,6 +78,7 @@ int main(int argc, char** argv)
             // DrawModel(model, (Vector3){.0f,.0f,.0f}, 1.0f, WHITE);
 
             chunk.draw_chunk(dirt_plank);
+            world.draw_all(dirt_plank);
             // bb.draw_face({-10, 10, 10}, DIR_UP);
 
             // for (int dir = 0; dir < COUNT_DIR; dir++) {

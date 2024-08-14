@@ -76,9 +76,10 @@ struct Cord {
 
 class Block {
 public:
-    float tx = 0.0f; // position of texture in texture map
+    float tx = 0.0f; // position of texture in texture map. Constructor should do the magic
     float ty = 0.0f; // Assuming: every face same texture for now
     Cord pos;
+    bool isTrans;
     std::bitset<6> visible = 0; // is face visible
     enum Type {
         Air,
@@ -88,11 +89,12 @@ public:
         TypeCount
     } type;
 
-    Block() {};
+    Block() {}
     Block(Type type) : type(type) {};
     Block(Type type, int tx, int ty) : type(type), tx(tx), ty(ty) {};
     Block(Type type, int tx, int ty, Cord pos) : type(type), tx(tx), ty(ty), pos(pos) {};
-    inline bool is_transparent() {return type == Air;}
+    ~Block() {};
+    inline bool is_transparent() {return isTrans;}
     void generate_face(FacePlacementData &dest, Dir dir, Cord pos);
     void draw_face(Cord pos, Dir dir);
 };
