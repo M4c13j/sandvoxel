@@ -10,6 +10,7 @@ public:
     Block block[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
     int id = 0;
     Mesh chunkMesh = { 0 };
+    Model model;
 
     Chunk() {};
     Chunk(Cord cords) : cords(cords) {};

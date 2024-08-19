@@ -8,6 +8,7 @@
 #include "chunk.hpp"
 #include "world.hpp"
 #include "config.hpp"
+#include "benchmark.hpp"
 
 int main(int argc, char** argv)
 {
@@ -53,8 +54,10 @@ int main(int argc, char** argv)
     Block bb = Block(Block::DirtPlank, 0,0);
 
     World world = World(10, 10);
+    BENCHMARK_START(chunks);
     world.generate_perlin_chunks(2137u);
     world.mesh_all_chunks();
+    BENCHMARK_STOP(chunks);
 
     // printf("DEBUGGER\n"); return 0;
     // Renderer renderer = Renderer();
@@ -76,7 +79,6 @@ int main(int argc, char** argv)
             DrawGrid(100, 1.0f);
 
             // DrawModel(model, (Vector3){.0f,.0f,.0f}, 1.0f, WHITE);
-
             chunk.draw_chunk(dirt_plank);
             world.draw_all(dirt_plank);
             // bb.draw_face({-10, 10, 10}, DIR_UP);
@@ -99,9 +101,12 @@ int main(int argc, char** argv)
          EndDrawing();
     }
 
+
     CloseWindow();
     UnloadTexture(planktxt);
     UnloadModel(model);
+
+    BENCHMARK_LOG(chunks);
 
     return 0;
 }

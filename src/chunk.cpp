@@ -43,10 +43,10 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
 }
 
 void Chunk::draw_chunk(Texture &text) {
-    Material material = LoadMaterialDefault();
-    material.maps[MATERIAL_MAP_DIFFUSE].texture = text;
+    // Material material = LoadMaterialDefault();
+    // material.maps[MATERIAL_MAP_DIFFUSE].texture = text;
 
-    Model model = LoadModelFromMesh(chunkMesh);
+    // Model model = LoadModelFromMesh(chunkMesh);
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = text;
 
     // DEBUG: it may need to be uncommented
@@ -195,6 +195,7 @@ void Chunk::generate_mesh() {
     chunkMesh.vertexCount = vertexCount;
 
     UploadMesh(&chunkMesh, false);
+    model = LoadModelFromMesh(chunkMesh);;
 }
 
 void Chunk::gen_mesh_block(float *vertPt, float *texPt, float *normalPt,
