@@ -10,6 +10,9 @@
 #include "config.hpp"
 #include "benchmark.hpp"
 
+// #define ANKERL_NANOBENCH_IMPLEMENT
+// #include "nanobench.h"
+
 int main(int argc, char** argv)
 {
     // Initialize raylib ======================
@@ -53,17 +56,18 @@ int main(int argc, char** argv)
 
     Block bb = Block(Block::DirtPlank, 0,0);
 
-    World world = World(10, 10);
-    BENCHMARK_START(chunks);
-    world.generate_perlin_chunks(2137u);
-    world.mesh_all_chunks();
-    BENCHMARK_STOP(chunks);
+    World world = World(100, 100);
+
+    Benchmark bench("Chunk mesh ", 1);
+    bench.start();
+        world.generate_perlin_chunks(2137u);
+        world.mesh_all_chunks();
+    bench.stop(world.x_size * world.z_size);
 
     // printf("DEBUGGER\n"); return 0;
     // Renderer renderer = Renderer();
     // Main loop ==============================
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()) {
         UpdateCamera(&player.camera, CAMERA_FREE);
         // Rendering
         BeginDrawing();
@@ -106,7 +110,7 @@ int main(int argc, char** argv)
     UnloadTexture(planktxt);
     UnloadModel(model);
 
-    BENCHMARK_LOG(chunks);
+    bench.results();
 
     return 0;
 }

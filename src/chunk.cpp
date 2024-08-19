@@ -150,38 +150,6 @@ void Chunk::generate_mesh() {
             }
         }
     }
-    //    Block *curr = queue.front(); queue.pop();
-    //     for (int dir = 0; dir < COUNT_DIR; dir++) {
-    //         Cord nextPos = curr->pos + FACE_NORMALS[dir];
-    //         Dir actualDir = static_cast<Dir>(dir); // goofy ahh
-    //         if (is_in_chunk(nextPos)) {// bez sensu, bo nie zlepia scian
-    //             Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
-    //             if (nextBlock->visible[0] || 1) {
-    //                 curr->generate_face(placementData, actualDir, curr->pos);
-    //                 placementData.advance_face();
-    //                 vertexCount += 4; // vert count
-    //                 indexCount += 2; //tri count
-    //                 // break;
-    //             }
-    //         }
-    //     }
-    // }
-
-    /*for (int x = 0; x < config::CHUNK_SIZE; x++) {
-        for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
-            for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Cord startingPos = Cord(x, y, z) + cords;
-                // Vector3 startingPos = Vector3Add((Vector3){x,y,z}, cords); // goofy ass
-                gen_mesh_block(vertices + 3*vertexCount, texcoords + 2*vertexCount, normals + 3*vertexCount,
-                    indices + 3*indexCount, block[x][y][z], startingPos, vertexCount);
-
-                // printf("Cube gen: %d %d %d ", (int)startingPos.x,  (int)startingPos.y, (int)startingPos.z);
-                // printf(" pos: %d %d %d. \n", x, y, z);
-                vertexCount += 24;
-                indexCount += 12;
-            }
-        }
-    }*/
 
     // UnloadMesh(chunkMesh);
     chunkMesh = { 0 };
