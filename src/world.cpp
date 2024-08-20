@@ -1,16 +1,20 @@
 #include "world.hpp"
+#include "raymath.h"
+World::World(size_t mapSide) {
+    side = mapSide;
+    float heightOffset = (-1) * config::CHUNK_HEIGHT / 2;
+    float normalOffset = (-1) * (float)config::CHUNK_SIZE * side / 2;
+    drawOffset = {normalOffset, heightOffset, normalOffset};
 
-World::World(int x, int z) {
-    x_size = x;
-    z_size = z;
-    offset = {0,0,0};
-
-    chunks = GENERATE_2D_VECTOR(Chunk, x, z, Chunk()); // fix cords
-    for (int row = 0; row < x; row++) {
-        for (int col = 0; col < z; col++) {
+    chunks = GENERATE_2D_VECTOR(Chunk, side, side, Chunk()); // fix cords
+    for (int row = 0; row < side; row++) {
+        for (int col = 0; col < side; col++) {
             Chunk *curr = &chunks[row][col];
-            curr->cords = {row * config::CHUNK_SIZE, 0, col * config::CHUNK_SIZE};
-            curr->id = row*x + col;
+            curr->cords = {row, 0, col};
+            curr->id = row*side + col;
+            curr->drawPos = Vector3Add(
+                (Vector3){(float)row * config::CHUNK_SIZE, 0, (float)col * config::CHUNK_SIZE},
+                drawOffset);
         }
     }
 }
@@ -38,6 +42,7 @@ void World::mesh_all_chunks() {
         }
     }
 }
+
 void World::draw_all(Texture &atlas) {
     for (auto &row : chunks) {
         for (auto &chunk : row) {

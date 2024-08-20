@@ -6,10 +6,11 @@
 
 class Chunk {
 public:
-    Cord cords = {0,0,0}; // x,z - grid. y - height offset
+    Cord cords = {0, 0, 0}; // x,z - grid. y - height offset
+    Vector3 drawPos = {0, 0, 0}; // posotion of block in direction of {-1, -1, -1}.
     Block block[config::CHUNK_SIZE][config::CHUNK_HEIGHT][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
     int id = 0;
-    Mesh chunkMesh = { 0 };
+    Mesh chunkMesh = {0};
     Model model;
 
     Chunk() {};

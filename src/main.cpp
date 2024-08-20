@@ -1,9 +1,9 @@
 #include "raylib.h"
 #include "raymath.h"
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <map>
-#include <assert.h>
+#include <cassert>
 #include "player.hpp"
 #include "chunk.hpp"
 #include "world.hpp"
@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     InitWindow(1200, 700, "Raylib + ImGui Example");
     SetTargetFPS(60);
     SetWindowState(FLAG_WINDOW_RESIZABLE ); //| FLAG_BORDERLESS_WINDOWED_MODE);
-    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT); // Anti-asliasing and V-Sync
+    SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT); // Anti-aliasing and V-Sync
 
     Mesh mesh = GenMeshPlane(10, 10, 2, 2);
     Model model = LoadModelFromMesh(mesh);
@@ -56,13 +56,13 @@ int main(int argc, char** argv)
 
     Block bb = Block(Block::DirtPlank, 0,0);
 
-    World world = World(100, 100);
+    World world = World(10);
 
     Benchmark bench("Chunk mesh ", 1);
     bench.start();
         world.generate_perlin_chunks(2137u);
         world.mesh_all_chunks();
-    bench.stop(world.x_size * world.z_size);
+    bench.stop(world.side * world.side);
 
     // printf("DEBUGGER\n"); return 0;
     // Renderer renderer = Renderer();
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        chunk.generate_mesh();
+        // chunk.generate_mesh();
 
         BeginMode3D(player.camera);
             DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);
@@ -106,11 +106,11 @@ int main(int argc, char** argv)
     }
 
 
+    bench.results();
     CloseWindow();
     UnloadTexture(planktxt);
     UnloadModel(model);
 
-    bench.results();
 
     return 0;
 }

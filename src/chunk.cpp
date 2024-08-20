@@ -30,7 +30,7 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
 
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int z = 0; z < config::CHUNK_SIZE; z++) {
-            int glevel = perlin.noise2D_01((x+cords.x)*0.1, (z+cords.z)*0.1) * config::CHUNK_HEIGHT;
+            int glevel = perlin.noise2D_01((x+cords.x*config::CHUNK_SIZE)*0.1, (z+cords.z*config::CHUNK_SIZE)*0.1) * config::CHUNK_HEIGHT;
             for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
                 if (y < glevel) {
                     block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
@@ -54,18 +54,21 @@ void Chunk::draw_chunk(Texture &text) {
     // DrawModelEx(model, {0, 0, 0}, (Vector3){0, 0, 0},
     //             0, (Vector3){1, 1, 1}, WHITE);
 
-    DrawModel(model, cords, 1, WHITE);
+    DrawModel(model, {0,0,0}, 1, WHITE);
 
     // UnloadMaterial(material);
     // UnloadModel(model);
 }
-
 
 inline bool is_in_chunk(Cord pos) {
     return (pos.x < config::CHUNK_SIZE && pos.x >= 0) &&
         (pos.y < config::CHUNK_HEIGHT && pos.y >= 0) &&
         (pos.z < config::CHUNK_SIZE && pos.z >= 0);
 }
+
+// inline bool is_visible_dir(const World &world, Dir dir) {
+//     if (is_in_chunk())
+// }
 
 int Chunk::set_visible_faces() {
     int visCount = 0;
@@ -92,30 +95,10 @@ int Chunk::set_visible_faces() {
     return visCount;
 }
 
-
-
 //temoprarily disabled
 void Chunk::update_visibility() {
     printf("GAYASS\n\n\n");
     inverse_dir(DIR_DOWN);
-    // std::queue<Block*> queue = get_transparent(); // for now, only Air iss visible
-    // assert(!queue.empty());
-
-    // while (!queue.empty()) {
-    //     Block *akt = queue.front(); queue.pop();
-
-    //     for (int dir = 0; dir < COUNT_DIR; dir++) {
-    //         Cord nextPos = akt->pos + FACE_NORMALS[dir];
-    //         if (is_in_chunk(nextPos)) {
-    //             Block *nextBlock = &block[nextPos.x][nextPos.y][nextPos.z];
-    //             Dir inversedDir = inverse_dir(static_cast<Dir>(dir)); // todo: weird af
-    //             if (!nextBlock->is_transparent()) {
-    //                 nextBlock->visible[inversedDir] = true;
-    //                 visibleFaces++;
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 void Chunk::generate_mesh() {
@@ -141,7 +124,8 @@ void Chunk::generate_mesh() {
                 Block *curr = &block[x][y][z];
                 for (int dir = 0; dir < COUNT_DIR; dir++) {
                     if (curr->visible[dir]) {
-                        curr->generate_face(placementData, static_cast<Dir>(dir), {x,y,z});
+                        Vector3 currBlockPos = Vector3Add(drawPos, {x,y,z});
+                        curr->generate_face(placementData, static_cast<Dir>(dir), currBlockPos);
                         placementData.advance_face();
                         vertexCount += 4;
                         indexCount += 2;

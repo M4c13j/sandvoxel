@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <iomanip>
+#include <utility>
 
 //==============================================================================
 // Macro tests.
@@ -24,7 +25,6 @@
 
 //==============================================================================
 // Version 2 of benchmarker. Now using more ++ than C.
-
 class Benchmark{
     private:
         std::string name;
@@ -32,7 +32,7 @@ class Benchmark{
         std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
         std::chrono::duration<double> total_duration;
     public:
-        Benchmark(const std::string& name, int iter_count) : name(name), iter_count(iter_count), total_duration(0) {}
+        Benchmark(std::string name, int iter_count) : name(std::move(name)), iter_count(iter_count), total_duration(0) {}
 
         void start() {
             std::cout << "\n====== Bench " << name << " has started =======\n";
@@ -53,12 +53,12 @@ class Benchmark{
         }
 
         void results() {
-            double sec_tot = std::chrono::duration_cast<std::chrono::seconds>(total_duration).count();
-            double sec_it= std::chrono::duration_cast<std::chrono::seconds>(total_duration).count() / (double)iter_count;
-            double ms_tot = std::chrono::duration_cast<std::chrono::milliseconds>(total_duration).count();
-            double ms_it= std::chrono::duration_cast<std::chrono::milliseconds>(total_duration).count() / (double)iter_count;
-            double us_tot = std::chrono::duration_cast<std::chrono::microseconds>(total_duration).count();
-            double us_it= std::chrono::duration_cast<std::chrono::microseconds>(total_duration).count() / (double)iter_count;
+            double sec_tot = std::chrono::duration_cast<std::chrono::duration<double>>(total_duration).count();
+            double sec_it= sec_tot / (double)iter_count;
+            double ms_tot = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(total_duration).count(); // Yes, I know its sec_tot / 1000 but I wanted to write it _prettier_ (to understand chrono a bit)
+            double ms_it= ms_tot / (double)iter_count;
+            double us_tot = std::chrono::duration_cast<std::chrono::duration<double, std::micro>>(total_duration).count();
+            double us_it= us_tot / (double)iter_count;
             std::cout << "\n====== Bench " << name << " has ended =======\n";
             std::cout << std::fixed << std::setprecision(3);
             std::cout << "\t" << name << " took: " << std::setw(10) << std::right << sec_tot << "s (total)   |  " << std::setw(10) << std::right << sec_it << "s (per iteration).\n";

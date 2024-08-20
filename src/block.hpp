@@ -63,6 +63,9 @@ struct Cord {
     Cord operator+(const Cord& rhs) const {
         return Cord(x + rhs.x, y + rhs.y, z + rhs.z);
     }
+    Cord operator-(const Cord& rhs) const {
+        return Cord(x - rhs.x, y - rhs.y, z - rhs.z);
+    }
     void shift(int d) {
         x -= d; y -= d; z -= d;
     }
