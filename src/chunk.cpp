@@ -15,9 +15,9 @@ void Chunk::generate_default_blocks(int airLevel) {
         for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 if (y< airLevel) {
-                    block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
+                    blocks[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
                 } else {
-                    block[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
+                    blocks[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
                 }
             }
         }
@@ -33,9 +33,9 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
             int glevel = perlin.noise2D_01((x+cords.x*config::CHUNK_SIZE)*0.1, (z+cords.z*config::CHUNK_SIZE)*0.1) * config::CHUNK_HEIGHT;
             for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
                 if (y < glevel) {
-                    block[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
+                    blocks[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
                 } else {
-                    block[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
+                    blocks[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
                 }
             }
         }
@@ -60,31 +60,44 @@ void Chunk::draw_chunk(Texture &text) {
     // UnloadModel(model);
 }
 
-inline bool is_in_chunk(Cord pos) {
-    return (pos.x < config::CHUNK_SIZE && pos.x >= 0) &&
-        (pos.y < config::CHUNK_HEIGHT && pos.y >= 0) &&
-        (pos.z < config::CHUNK_SIZE && pos.z >= 0);
-}
 
-// inline bool is_visible_dir(const World &world, Dir dir) {
-//     if (is_in_chunk())
-// }
+// Returns visibilit of block at dir from pos. CHecks neighbouring chunk if needed.
+bool Chunk::is_visible_face(Cord pos, Dir dir) {
+    Cord nextPos= pos + FACE_NORMALS[dir];
+    if (is_in_chunk(nextPos)) {
+        return get_block(nextPos)->is_transparent();
+    }
+
+    if (neighbours[dir] == nullptr) return false;
+
+    switch (dir) {
+        case DIR_NORTH: nextPos.z = 0; break;
+        case DIR_SOUTH: nextPos.z = config::CHUNK_SIZE - 1; break;
+        case DIR_UP: nextPos.y = 0; break;
+        case DIR_DOWN: nextPos.y = config::CHUNK_HEIGHT- 1; break;
+        case DIR_EAST: nextPos.x = 0; break;
+        case DIR_WEST: nextPos.x = config::CHUNK_SIZE - 1; break;
+    }
+
+    return neighbours[dir]->get_block(nextPos)->is_transparent();
+}
 
 int Chunk::set_visible_faces() {
     int visCount = 0;
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block *curr = &block[x][y][z];
+                Block *curr = &blocks[x][y][z];
                 curr->visible.reset();
                 if (curr->type == Block::Air) {
                     continue; // do not draw Air
                 }
 
                 Cord pos{x,y,z};
-                for (int dir = 0; dir < COUNT_DIR; dir++) {
+                for (int dir = 0; dir < DIR_COUNT; dir++) {
                     Cord nextPos = pos + FACE_NORMALS[dir];
-                    if (is_in_chunk(nextPos) &&  get_block(nextPos)->type == Block::Air) {
+                    // if (is_in_chunk(nextPos) &&  get_block(nextPos)->type == Block::Air) {
+                    if (is_visible_face(pos, static_cast<Dir>(dir))) {
                         curr->visible[dir] = true;
                         visCount++;
                     }
@@ -121,8 +134,8 @@ void Chunk::generate_mesh() {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_HEIGHT; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block *curr = &block[x][y][z];
-                for (int dir = 0; dir < COUNT_DIR; dir++) {
+                Block *curr = &blocks[x][y][z];
+                for (int dir = 0; dir < DIR_COUNT; dir++) {
                     if (curr->visible[dir]) {
                         Vector3 currBlockPos = Vector3Add(drawPos, {x,y,z});
                         curr->generate_face(placementData, static_cast<Dir>(dir), currBlockPos);

@@ -18,7 +18,9 @@ public:
     World(size_t mapSide);
     void generate_default_chunks();
     void generate_perlin_chunks(uint_fast32_t seed);
-    Block& get_block_cords(Cord cord); // returns block from given cordinates
+
+    Block *get_block_cords(Cord cord); // returns block from given cordinates
+    Chunk *get_chunk(int x, int z);
     void mesh_all_chunks();
     void mesh_chunk(Cord pos);
     void draw_all(Texture &atlas);

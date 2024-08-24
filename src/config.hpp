@@ -7,6 +7,6 @@ namespace config {
 
     constexpr int MAP_SIZE = 256; // assuming square map
     constexpr int CHUNK_SIZE = 32; // assuming square chunk (x and z)
-    constexpr int CHUNK_HEIGHT = 32; // height of chunk (y)
+    constexpr int CHUNK_HEIGHT = CHUNK_SIZE; // height of chunk (y)
     constexpr int BLOCKS_IN_CHUNK = CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE;
 }

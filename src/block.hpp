@@ -9,14 +9,15 @@ const int VERTEX_DATA_PER_FACE = 3 * 4; // for vertices and normals
 const int TEXTURE_DATA_PER_FACE = 2 * 4;
 const int INDICES_DATA_PER_FACE = 6;
 
+// Z Y X  + -    (order of directions)
 enum Dir {
-    DIR_SOUTH = 0,
-    DIR_NORTH,
+    DIR_NORTH = 0,
+    DIR_SOUTH,
     DIR_UP,
     DIR_DOWN,
     DIR_EAST,
     DIR_WEST,
-    COUNT_DIR
+    DIR_COUNT
 };
 
 const Vector3 FACE_NORMALS[] = {
@@ -97,7 +98,7 @@ public:
     Block(Type type, int tx, int ty) : type(type), tx(tx), ty(ty) {};
     Block(Type type, int tx, int ty, Cord pos) : type(type), tx(tx), ty(ty), pos(pos) {};
     ~Block() {};
-    inline bool is_transparent() {return isTrans;}
+    inline bool is_transparent() {return type == Air;}
     void generate_face(FacePlacementData &dest, Dir dir, Cord pos);
     void draw_face(Cord pos, Dir dir);
 };

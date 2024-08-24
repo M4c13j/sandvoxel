@@ -15,6 +15,10 @@ World::World(size_t mapSide) {
             curr->drawPos = Vector3Add(
                 (Vector3){(float)row * config::CHUNK_SIZE, 0, (float)col * config::CHUNK_SIZE},
                 drawOffset);
+            curr->neighbours[DIR_NORTH] = col+1 < side ? &chunks[row][col+1] : nullptr;
+            curr->neighbours[DIR_SOUTH] = col-1 >= 0 ? &chunks[row][col-1] : nullptr;
+            curr->neighbours[DIR_EAST] = row+1 < side ? &chunks[row+1][col] : nullptr;
+            curr->neighbours[DIR_WEST] = row-1 >= 0 ? &chunks[row-1][col] : nullptr;
         }
     }
 }
@@ -49,4 +53,17 @@ void World::draw_all(Texture &atlas) {
             chunk.draw_chunk(atlas);
         }
     }
+}
+
+Block *World::get_block_cords(Cord cord) {
+    Cord relative{cord.x%config::CHUNK_SIZE, cord.y%config::CHUNK_HEIGHT, cord.z%config::CHUNK_SIZE};
+    return get_chunk(cord.x/config::CHUNK_SIZE, cord.z / config::CHUNK_SIZE)->get_block(relative);
+}
+
+Chunk *World::get_chunk(int x, int z) {
+    assert(x < side && x >= 0 && z < side && z >= 0);
+    return &chunks[x][z];
+}
+
+void World::mesh_chunk(Cord pos) {
 }
