@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 
     Block bb = Block(Block::DirtPlank, 0,0);
 
-    World world = World(10);
+    World world = World(16);
 
     Benchmark bench("Chunk mesh ", 1);
     bench.start();
@@ -73,9 +73,22 @@ int main(int argc, char** argv)
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        // chunk.generate_mesh();
+        // for (int i=0;i<5;i++) chunk.generate_mesh();
+
+        Ray ray;//player.camera.position, player.camera.target);
+        ray.direction = player.camera.target;
+        ray.position = player.camera.position;
 
         BeginMode3D(player.camera);
+            for (auto row : world.chunks) {
+               for (auto ch : row) {
+                   RayCollision collision= GetRayCollisionMesh(ray, ch.chunkMesh, MatrixIdentity());
+                   if (collision.hit) {
+                       std::cout << "MESH HIT\n";
+                       DrawBoundingBox(GetMeshBoundingBox(ch.chunkMesh), BLUE);
+                   }
+               }
+            }
             DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);
             DrawCubeV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, PURPLE);
             DrawCubeWiresV((Vector3){ 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, DARKGREEN);
@@ -95,7 +108,7 @@ int main(int argc, char** argv)
 
          // debug stays
          DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
-         DrawText(TextFormat("Fps: %d", GetFPS()), 10, 30, 20, DARKGRAY);
+         DrawText(TextFormat("Fps: %d  |  Frame time: %.2fms", GetFPS(), GetFrameTime()*1000), 10, 30, 20, DARKGRAY);
          DrawText(TextFormat("Camera Position: [%.2f, %.2f, %.2f]", player.camera.position.x, player.camera.position.y, player.camera.position.z), 10, 50, 20, DARKGRAY);
          DrawText(TextFormat("  Camera target: [%.2f, %.2f, %.2f]", player.camera.target.x, player.camera.target.y, player.camera.target.z), 10, 70, 20, DARKGRAY);
          DrawText(TextFormat("Mesh Count: %d", model.meshCount), 10, 90, 20, DARKGRAY);
@@ -108,8 +121,8 @@ int main(int argc, char** argv)
 
     bench.results();
     CloseWindow();
-    UnloadTexture(planktxt);
-    UnloadModel(model);
+    // UnloadTexture(planktxt);
+    // UnloadModel(model);
 
 
     return 0;

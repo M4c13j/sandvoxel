@@ -19,7 +19,10 @@ public:
     void generate_default_chunks();
     void generate_perlin_chunks(uint_fast32_t seed);
 
-    Block *get_block_cords(Cord cord); // returns block from given cordinates
+    inline Block *get_block(Cord cord) { // returns block from given cordinates
+        Cord relative{cord.x%config::CHUNK_SIZE, cord.y%config::CHUNK_HEIGHT, cord.z%config::CHUNK_SIZE};
+        return get_chunk(cord.x/config::CHUNK_SIZE, cord.z / config::CHUNK_SIZE)->get_block(relative);
+    }
     Chunk *get_chunk(int x, int z);
     void mesh_all_chunks();
     void mesh_chunk(Cord pos);

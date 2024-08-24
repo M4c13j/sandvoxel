@@ -2,11 +2,13 @@
 #include "raymath.h"
 World::World(size_t mapSide) {
     side = mapSide;
+
     float heightOffset = (-1) * config::CHUNK_HEIGHT / 2;
     float normalOffset = (-1) * (float)config::CHUNK_SIZE * side / 2;
     drawOffset = {normalOffset, heightOffset, normalOffset};
 
     chunks = GENERATE_2D_VECTOR(Chunk, side, side, Chunk()); // fix cords
+
     for (int row = 0; row < side; row++) {
         for (int col = 0; col < side; col++) {
             Chunk *curr = &chunks[row][col];
@@ -55,10 +57,10 @@ void World::draw_all(Texture &atlas) {
     }
 }
 
-Block *World::get_block_cords(Cord cord) {
-    Cord relative{cord.x%config::CHUNK_SIZE, cord.y%config::CHUNK_HEIGHT, cord.z%config::CHUNK_SIZE};
-    return get_chunk(cord.x/config::CHUNK_SIZE, cord.z / config::CHUNK_SIZE)->get_block(relative);
-}
+// Block *World::get_block(Cord cord) {
+//     Cord relative{cord.x%config::CHUNK_SIZE, cord.y%config::CHUNK_HEIGHT, cord.z%config::CHUNK_SIZE};
+//     return get_chunk(cord.x/config::CHUNK_SIZE, cord.z / config::CHUNK_SIZE)->get_block(relative);
+// }
 
 Chunk *World::get_chunk(int x, int z) {
     assert(x < side && x >= 0 && z < side && z >= 0);
