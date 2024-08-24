@@ -57,11 +57,6 @@ void World::draw_all(Texture &atlas) {
     }
 }
 
-// Block *World::get_block(Cord cord) {
-//     Cord relative{cord.x%config::CHUNK_SIZE, cord.y%config::CHUNK_HEIGHT, cord.z%config::CHUNK_SIZE};
-//     return get_chunk(cord.x/config::CHUNK_SIZE, cord.z / config::CHUNK_SIZE)->get_block(relative);
-// }
-
 Chunk *World::get_chunk(int x, int z) {
     assert(x < side && x >= 0 && z < side && z >= 0);
     return &chunks[x][z];

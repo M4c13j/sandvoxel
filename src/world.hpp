@@ -23,6 +23,7 @@ public:
         Cord relative{cord.x%config::CHUNK_SIZE, cord.y%config::CHUNK_HEIGHT, cord.z%config::CHUNK_SIZE};
         return get_chunk(cord.x/config::CHUNK_SIZE, cord.z / config::CHUNK_SIZE)->get_block(relative);
     }
+    // TODO: uses array positions, not "actual" cordinates
     Chunk *get_chunk(int x, int z);
     void mesh_all_chunks();
     void mesh_chunk(Cord pos);
