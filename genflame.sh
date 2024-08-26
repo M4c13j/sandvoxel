@@ -33,10 +33,14 @@ if [[ -x $1 ]]; then
     echo -e "\033[0m for program $1 to file $fileout..."
 
     sudo perf record -F 99 -a -g -- $1
+    echo "Sampling ended..."
+    echo "Generating framegraph from collected data..."
     sudo perf script > out.perf
     $STACK_COLLAPSER out.perf > out.folded
     $FLAME_GENERATOR out.folded > $fileout
-    echo -e "\n\nEnd of script."
+    echo -e "\n\n"
+    echo "Flamegraph generated in file $fileout!"
+    echo "End of script."
 else
     echo -e "\033[38;2;255;0;0mInvalid path."
     exit 1

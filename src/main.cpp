@@ -41,8 +41,8 @@ int main(int argc, char** argv)
         world.mesh_all_chunks();
     bench.stop(world.side * world.side);
 
+
     // printf("DEBUGGER\n"); return 0;
-    // Renderer renderer = Renderer();
     // Main loop ==============================
     while (!WindowShouldClose()) {
         UpdateCamera(&player.camera, CAMERA_FREE);

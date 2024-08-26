@@ -3,12 +3,17 @@
 #include <algorithm>
 #include <cstdio>
 
-#include "raylib.h"
-#include "raymath.h"
-#include "chunk.hpp"
 #include "block.hpp"
+#include "chunk.hpp"
 #include "config.hpp"
 #include "perlin.hpp"
+#include "raylib.h"
+#include "raymath.h"
+
+Chunk::~Chunk() {
+    // UnloadModel(model);
+    // UnloadMesh(chunkMesh);
+}
 
 void Chunk::generate_default_blocks(int airLevel) {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
@@ -47,6 +52,9 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
 }
 
 void Chunk::draw_chunk(Texture &text) {
+    if (isEmpty) {
+        return; // empty chunk, don't waste time
+    }
     // Material material = LoadMaterialDefault();
     // material.maps[MATERIAL_MAP_DIFFUSE].texture = text;
 
@@ -119,6 +127,9 @@ void Chunk::update_visibility() {
 }
 
 void Chunk::generate_mesh() {
+    if (isEmpty()) {
+        return; // why bother?
+    }
     const int FACES_TO_DRAW = set_visible_faces();
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * FACES_TO_DRAW;

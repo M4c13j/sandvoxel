@@ -6,12 +6,9 @@
 #include <numeric>
 #include <algorithm>
 
-// constexpr FaceData FACE_DATA_VOXEL[] = {
-//     {{23.0f}, {24.0f,24.0f}, {23.0f,24.0f}, {21}}
-// };
 
 // Data for all faces of the cube
-// Assumption here: face has side of 1.0f
+// Assumption here: face has side of 1.0f and cordinates of cube are in the middle (not in any vertex)
 const float FACE_VERTICES[] = {
     -0.5, -0.5, 0.5,
     0.5, -0.5, 0.5,
@@ -93,6 +90,8 @@ const float FACE_NORMALS_RAW[] = {
     -1.0f, 0.0f, 0.0f
 };
 
+/// Order in which vertices should be drawn to make triangles for face.
+/// It includes orientation for raylib so that texture is drawn in proper direction.
 const unsigned short FACE_INDICES[] = {
     0, 1, 2, 0, 2, 3
 };
