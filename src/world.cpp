@@ -7,7 +7,8 @@
 
 void World::print_size_report() {
     std::cout << "=========== SIZE report ============" << std::endl;
-    std::cout << "World size: " << sizeof(*this) << " bytes \n";
+    std::cout << "Total chunks: " << side << "^2 * " << height << " = " << side*side*height <<"\n";
+    std::cout << "World size: " << sizeof(*this) << " bytes  ~ " << sizeof(*this) / 1e6 << " mb\n";
     std::cout << "Chunk size: " << sizeof(chunks[0][0][0]) << " bytes \n";
     std::cout << "Block size: " << sizeof(chunks[0][0][0].blocks[0][0][0]) << " bytes \n";
 }
@@ -39,11 +40,10 @@ World::World() {
     print_size_report();
 }
 
-
 void World::generate_perlin_chunks(uint_fast32_t seed) {
     const siv::PerlinNoise::seed_type seedG = seed; //(uint_fast16_t) GetMousePosition().x;
     const siv::PerlinNoise            perlin{seedG};
-    const float                       PRECISION_FOR_PERLIN = 1.0 / (side * 8);// * config::CHUNK_SIZE);
+    const float                       PRECISION_FOR_PERLIN = 1.0 / (side * 8); // * config::CHUNK_SIZE);
     const int                         MAP_HEIGHT_BLOCKS    = height * config::CHUNK_SIZE;
 
     for (int x = 0; x < side; x++) {
@@ -64,20 +64,20 @@ void World::generate_perlin_chunks(uint_fast32_t seed) {
 }
 
 void World::mesh_all_chunks() {
-    for (int x = 0; x < config::MAP_SIDE_IN_CHUNKS; x++) {
-        for (int y = 0; y < config::MAP_HEIGHT_IN_CHUNKS; y++) {
-            for (int z = 0; z < config::MAP_SIDE_IN_CHUNKS; z++) {
-                chunks[x][y][z].generate_mesh();
+    for (auto &plane: chunks) {
+        for (auto &row : plane) {
+            for (auto &chunk : row) {
+                chunk.generate_mesh();
             }
         }
     }
 }
 
 void World::draw_all(Texture &atlas, bool drawBoundingBox) {
-    for (int x = 0; x < config::MAP_SIDE_IN_CHUNKS; x++) {
-        for (int y = 0; y < config::MAP_HEIGHT_IN_CHUNKS; y++) {
-            for (int z = 0; z < config::MAP_SIDE_IN_CHUNKS; z++) {
-                chunks[x][y][z].draw_chunk(atlas, drawBoundingBox);
+    for (auto &plane: chunks) {
+        for (auto &row : plane) {
+            for (auto &chunk : row) {
+                chunk.draw_chunk(atlas, drawBoundingBox);
             }
         }
     }

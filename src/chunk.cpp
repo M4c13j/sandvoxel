@@ -39,7 +39,7 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
                 (x+cords.x*config::CHUNK_SIZE)*PRECISION_FOR_PERLIN,
                 (z+cords.z*config::CHUNK_SIZE)*PRECISION_FOR_PERLIN
                 ) * config::CHUNK_SIZE;
-
+            nonEmptyBlocks += glevel;
             for (int y = 0; y < config::CHUNK_SIZE; y++) {
                 if (y < glevel) {
                     blocks[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
@@ -52,24 +52,15 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
 }
 
 void Chunk::draw_chunk(Texture &text, bool drawBoundingBox) {
-    if (!isVisible()) {
+    if (!isVisible())
         return; // empty chunk, don't waste time
-    }
-    // Material material = LoadMaterialDefault();
-    // material.maps[MATERIAL_MAP_DIFFUSE].texture = text;
-
-    // Model model = LoadModelFromMesh(chunkMesh);
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = text;
-
-    // DEBUG: it may need to be uncommented
-    // SetModelMeshMaterial(&model, 0, 0);
-    // DrawModelEx(model, {0, 0, 0}, (Vector3){0, 0, 0},
-    //             0, (Vector3){1, 1, 1}, WHITE);
 
     DrawModel(model, {0,0,0}, 1, WHITE);
     if(drawBoundingBox) {
-        DrawBoundingBox(bounding_box, BLACK);
-        DrawCubeWires(drawPos, config::CHUNK_SIZE, config::CHUNK_SIZE, config::CHUNK_SIZE, BLUE);
+        DrawBoundingBox(boundingBox, BLACK);
+        Vector3 cubeDrawPos = Vector3Add(drawPos, Vector3Scale({1,1,1}, config::CHUNK_SIZE/2));
+        DrawCubeWires(cubeDrawPos, config::CHUNK_SIZE, config::CHUNK_SIZE, config::CHUNK_SIZE, BLUE);
     }
 
     // UnloadMaterial(material);
@@ -81,7 +72,7 @@ void Chunk::draw_chunk(Texture &text, bool drawBoundingBox) {
 bool Chunk::is_visible_face(Cord pos, Dir dir) {
     Cord nextPos= pos + FACE_NORMALS[dir];
     if (is_in_chunk(nextPos)) {
-        return get_block(nextPos.x, nextPos.y, nextPos.z)->is_transparent();
+        return get_block(nextPos.x, nextPos.y, nextPos.z).is_transparent();
     }
 
     if (neighbours[dir] == nullptr) return false;
@@ -95,7 +86,7 @@ bool Chunk::is_visible_face(Cord pos, Dir dir) {
         case DIR_WEST: nextPos.x = config::CHUNK_SIZE - 1; break;
         }
 
-    return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z)->is_transparent();
+    return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z).is_transparent();
 }
 
 int Chunk::check_visible_faces() {
@@ -177,7 +168,7 @@ void Chunk::generate_mesh() {
 
     UploadMesh(&chunkMesh, false);
     model = LoadModelFromMesh(chunkMesh);
-    bounding_box = GetMeshBoundingBox(chunkMesh);
+    boundingBox = GetMeshBoundingBox(chunkMesh);
 }
 
 void Chunk::gen_mesh_block(float *vertPt, float *texPt, float *normalPt,
