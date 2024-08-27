@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     Texture dirt_plank = LoadTexture("../resources/textures/dirt_plank.png");
     Player player = Player();
 
-    Chunk chunk = Chunk({0, -config::CHUNK_HEIGHT/2,0}, 0);
+    Chunk chunk = Chunk({0, -config::CHUNK_SIZE/2,0}, 0);
     // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_perlin(2137u);
     chunk.update_visibility();
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
     Block bb = Block(Block::DirtPlank, 0,0);
 
-    World world = World(3);
+    World world = World();
 
     Benchmark bench("Chunk mesh ", 1);
     bench.start();

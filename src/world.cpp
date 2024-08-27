@@ -1,35 +1,31 @@
 #include "world.hpp"
 #include "raymath.h"
-World::World() {
-    float heightOffset = (-1) * config::MAP_HEIGHT / 2;
-    float normalOffset = (-1) * (float)config::CHUNK_SIZE * side / 2;
-    drawOffset = {normalOffset, heightOffset, normalOffset};
 
-    for (int x = 0; x < config::MAP_SIDE; x++) {
-        for (int y = 0; y < config::MAP_HEIGHT; y++) {
-            for (int z = 0; z < config::MAP_SIDE; z++) {
-                Chunk *curr = &chunks[x][y][z];
-                curr->cords = {x,y,z};
-                curr->id = -1; // TODO: remove or finish
-                curr->drawPos = Vector3Add(
-                    (Vector3){(float)x * config::CHUNK_SIZE, , (float)col * config::CHUNK_SIZE},
-                    drawOffset);
-                curr->neighbours[DIR_NORTH] = col+1 < side ? &chunks[row][col+1] : nullptr;
-                curr->neighbours[DIR_SOUTH] = col-1 >= 0 ? &chunks[row][col-1] : nullptr;
-                curr->neighbours[DIR_EAST] = row+1 < side ? &chunks[row+1][col] : nullptr;
-                curr->neighbours[DIR_WEST] = row-1 >= 0 ? &chunks[row-1][col] : nullptr;
+World::World() {
+    float heightOffset = (-1) * config::MAP_HEIGHT_IN_BLOCKS / 2;
+    float normalOffset = (-1) * (float)config::CHUNK_SIZE * side / 2;
+    drawOffset         = {normalOffset, heightOffset, normalOffset};
+
+    for (int x = 0; x < config::MAP_SIDE_IN_CHUNKS; x++) {
+        for (int y = 0; y < config::MAP_HEIGHT_IN_CHUNKS; y++) {
+            for (int z = 0; z < config::MAP_SIDE_IN_CHUNKS; z++) {
+                Chunk &curr  = chunks[x][y][z];
+                curr.cords   = {x, y, z};
+                curr.id      = -1; // TODO: remove or finish
+                curr.drawPos = Vector3Add((Vector3){(float)x * config::CHUNK_SIZE, (float)y * config::CHUNK_SIZE,
+                                                    (float)z * config::CHUNK_SIZE},
+                                          drawOffset);
+                curr.neighbours[DIR_NORTH] = z + 1 < side ? &chunks[x][y][z + 1] : nullptr;
+                curr.neighbours[DIR_SOUTH] = z - 1 >= 0 ? &chunks[x][y][z - 1] : nullptr;
+                curr.neighbours[DIR_EAST]  = x + 1 < side ? &chunks[x + 1][y][z] : nullptr;
+                curr.neighbours[DIR_WEST]  = x - 1 >= 0 ? &chunks[x - 1][y][z] : nullptr;
+                curr.neighbours[DIR_UP]    = y + 1 < height ? &chunks[x][y + 1][z] : nullptr;
+                curr.neighbours[DIR_DOWN]  = y - 1 >= 0 ? &chunks[x][y - 1][z] : nullptr;
             }
         }
     }
 }
 
-void World::generate_default_chunks() {
-    for (auto &row : chunks) {
-        for (auto &chunk : row) {
-            chunk.generate_default_blocks(-config::CHUNK_HEIGHT/2);
-        }
-    }
-}
 
 void World::generate_perlin_chunks(uint_fast32_t seed) {
     for (auto &row : chunks) {
@@ -57,10 +53,6 @@ void World::draw_all(Texture &atlas) {
     }
 }
 
-Chunk *World::get_chunk(int x, int y, int z) {
-    assert((x < side && x >= 0) && (y < side && y >= 0) && (z < side && z >= 0));
-    return &chunks[x][y][z];
-}
 
 void World::mesh_chunk(Cord pos) {
 }
