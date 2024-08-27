@@ -51,8 +51,8 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
     }
 }
 
-void Chunk::draw_chunk(Texture &text) {
-    if (isEmpty) {
+void Chunk::draw_chunk(Texture &text, bool drawBoundingBox) {
+    if (!isVisible()) {
         return; // empty chunk, don't waste time
     }
     // Material material = LoadMaterialDefault();
@@ -67,6 +67,10 @@ void Chunk::draw_chunk(Texture &text) {
     //             0, (Vector3){1, 1, 1}, WHITE);
 
     DrawModel(model, {0,0,0}, 1, WHITE);
+    if(drawBoundingBox) {
+        DrawBoundingBox(bounding_box, BLACK);
+        DrawCubeWires(drawPos, config::CHUNK_SIZE, config::CHUNK_SIZE, config::CHUNK_SIZE, BLUE);
+    }
 
     // UnloadMaterial(material);
     // UnloadModel(model);
@@ -86,7 +90,7 @@ bool Chunk::is_visible_face(Cord pos, Dir dir) {
         case DIR_NORTH: nextPos.z = 0; break;
         case DIR_SOUTH: nextPos.z = config::CHUNK_SIZE - 1; break;
         case DIR_UP: nextPos.y = 0; break;
-        case DIR_DOWN: nextPos.y = config::CHUNK_SIZE- 1; break;
+        case DIR_DOWN: nextPos.y = config::CHUNK_SIZE - 1; break;
         case DIR_EAST: nextPos.x = 0; break;
         case DIR_WEST: nextPos.x = config::CHUNK_SIZE - 1; break;
         }
@@ -94,20 +98,20 @@ bool Chunk::is_visible_face(Cord pos, Dir dir) {
     return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z)->is_transparent();
 }
 
-int Chunk::set_visible_faces() {
+int Chunk::check_visible_faces() {
     int visCount = 0;
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block *curr = &blocks[x][y][z];
-                curr->visible.reset();
-                if (curr->type == Block::Air)
+                Block &curr = blocks[x][y][z];
+                curr.visible.reset();
+                if (curr.is_transparent())
                     continue; // do not draw Air
 
                 Cord pos{x,y,z};
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
                     if (is_visible_face(pos, static_cast<Dir>(dir))) {
-                        curr->visible[dir] = true;
+                        curr.visible[dir] = true;
                         visCount++;
                     }
                 }
@@ -127,11 +131,11 @@ void Chunk::generate_mesh() {
     if (isEmpty())
         return; // why bother?
 
-    const int FACES_TO_DRAW = set_visible_faces();
+    visibleFaces = check_visible_faces();
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
-    const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * FACES_TO_DRAW;
-    const int TEXTURE_DATA_TOTAL = TEXTURE_DATA_PER_FACE * FACES_TO_DRAW;
-    const int INDICES_DATA_TOTAL = INDICES_DATA_PER_FACE * FACES_TO_DRAW;
+    const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * visibleFaces;
+    const int TEXTURE_DATA_TOTAL = TEXTURE_DATA_PER_FACE * visibleFaces;
+    const int INDICES_DATA_TOTAL = INDICES_DATA_PER_FACE * visibleFaces;
 
     float *vertices = (float*) RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float));
     float *texcoords = (float*) RL_MALLOC(TEXTURE_DATA_TOTAL * sizeof(float));
@@ -173,6 +177,7 @@ void Chunk::generate_mesh() {
 
     UploadMesh(&chunkMesh, false);
     model = LoadModelFromMesh(chunkMesh);
+    bounding_box = GetMeshBoundingBox(chunkMesh);
 }
 
 void Chunk::gen_mesh_block(float *vertPt, float *texPt, float *normalPt,

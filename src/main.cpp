@@ -31,15 +31,15 @@ int main(int argc, char** argv)
     chunk.update_visibility();
     chunk.generate_mesh();
 
-    Block bb = Block(Block::DirtPlank, 0,0);
+    Block bb = Block(Block::DirtPlank, 0, 0);
 
-    World world = World();
+    World *world = new World(); // stack overfow for bigger worlds if allocated on stack;
 
     Benchmark bench("Chunk mesh ", 1);
     bench.start();
-        world.generate_perlin_chunks(2137u);
-        world.mesh_all_chunks();
-    bench.stop(world.side * world.side);
+        world->generate_perlin_chunks(2137u);
+        world->mesh_all_chunks();
+    bench.stop(world->side * world->side);
 
 
     // printf("DEBUGGER\n"); return 0;
@@ -57,23 +57,14 @@ int main(int argc, char** argv)
         ray.position = player.camera.position;
 
         BeginMode3D(player.camera);
-            for (auto row : world.chunks) {
-               for (auto ch : row) {
-                   RayCollision collision= GetRayCollisionMesh(ray, ch.chunkMesh, MatrixIdentity());
-                   if (collision.hit) {
-                       std::cout << "MESH HIT\n";
-                       DrawBoundingBox(GetMeshBoundingBox(ch.chunkMesh), BLUE);
-                   }
-               }
-            }
             DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);
             DrawCubeV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, PURPLE);
             DrawCubeWiresV((Vector3){ 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, DARKGREEN);
             DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 3.0f, 1.0f }, YELLOW);
             DrawGrid(100, 1.0f);
 
-            chunk.draw_chunk(dirt_plank);
-            world.draw_all(dirt_plank);
+            chunk.draw_chunk(dirt_plank, true);
+            world->draw_all(dirt_plank, true);
 
             DrawBoundingBox(GetMeshBoundingBox(chunk.chunkMesh), BLACK);
          EndMode3D();

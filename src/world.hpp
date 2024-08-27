@@ -13,13 +13,14 @@
 ///
 class World {
 public:
+    // IMPORTANT: if World is stored in stack and it has more than ~60 chunks, it may fill whole stack (on my WSL 2 debian
+    // it is 8kb and it is standard). You have to allocate World on heap otherwise code may have segfault at the begging of main :(.
     Chunk chunks[config::MAP_SIDE_IN_CHUNKS][config::MAP_HEIGHT_IN_CHUNKS][config::MAP_SIDE_IN_CHUNKS];
     static constexpr size_t side   = config::MAP_SIDE_IN_CHUNKS; // for now, strict size
     static constexpr size_t height = config::MAP_HEIGHT_IN_CHUNKS;
     Vector3                 drawOffset; // offset so that mesh is drawn correctly
 
          World();
-    void generate_default_chunks();
     void generate_perlin_chunks(uint_fast32_t seed);
 
     Block *get_block(Cord cord) { // returns block from given cordinates
@@ -31,7 +32,8 @@ public:
     Chunk *get_chunk(int x, int y, int z) { return &chunks[x][y][z]; }
     void   mesh_all_chunks();
     void   mesh_chunk(Cord pos);
-    void   draw_all(Texture &atlas);
+    void   draw_all(Texture &atlas, bool drawBoundingBox);
+    void print_size_report();
 };
 
 #define GENERATE_2D_VECTOR(_TYPE, _ROWS, _COLUMNS, _DEFAULT)                                                           \

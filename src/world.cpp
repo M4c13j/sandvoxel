@@ -1,5 +1,16 @@
 #include "world.hpp"
+
+#include "perlin.hpp"
 #include "raymath.h"
+
+#include <iostream>
+
+void World::print_size_report() {
+    std::cout << "=========== SIZE report ============" << std::endl;
+    std::cout << "World size: " << sizeof(*this) << " bytes \n";
+    std::cout << "Chunk size: " << sizeof(chunks[0][0][0]) << " bytes \n";
+    std::cout << "Block size: " << sizeof(chunks[0][0][0].blocks[0][0][0]) << " bytes \n";
+}
 
 World::World() {
     float heightOffset = (-1) * config::MAP_HEIGHT_IN_BLOCKS / 2;
@@ -24,33 +35,53 @@ World::World() {
             }
         }
     }
+
+    print_size_report();
 }
 
 
 void World::generate_perlin_chunks(uint_fast32_t seed) {
-    for (auto &row : chunks) {
-        for (auto &chunk : row) {
-            chunk.generate_perlin(seed);
-        }
-    }
-}
+    const siv::PerlinNoise::seed_type seedG = seed; //(uint_fast16_t) GetMousePosition().x;
+    const siv::PerlinNoise            perlin{seedG};
+    const float                       PRECISION_FOR_PERLIN = 1.0 / (side * 8);// * config::CHUNK_SIZE);
+    const int                         MAP_HEIGHT_BLOCKS    = height * config::CHUNK_SIZE;
 
-void World::mesh_all_chunks() {
-    for (auto &col : chunks) {
-        for (auto &row : col) {
-            for (auto &chunk : row) {
-                chunk.generate_mesh();
+    for (int x = 0; x < side; x++) {
+        for (int z = 0; z < side; z++) {
+            for (int bx = 0; bx < config::CHUNK_SIZE; bx++) {
+                for (int bz = 0; bz < config::CHUNK_SIZE; bz++) {
+                    int glevel = perlin.noise2D_01((bx + x * config::CHUNK_SIZE) * PRECISION_FOR_PERLIN,
+                                                   (bz + z * config::CHUNK_SIZE) * PRECISION_FOR_PERLIN)
+                                 * MAP_HEIGHT_BLOCKS;
+                    for (int by = 0; by < MAP_HEIGHT_BLOCKS; by++) {
+                        chunks[x][by / config::CHUNK_SIZE][z].setBlockType(bx, by % config::CHUNK_SIZE, bz,
+                                                                           by > glevel ? Block::Air : Block::DirtPlank);
+                    }
+                }
             }
         }
     }
 }
 
-void World::draw_all(Texture &atlas) {
-    for (auto &row : chunks) {
-        for (auto &chunk : row) {
-            chunk.draw_chunk(atlas);
+void World::mesh_all_chunks() {
+    for (int x = 0; x < config::MAP_SIDE_IN_CHUNKS; x++) {
+        for (int y = 0; y < config::MAP_HEIGHT_IN_CHUNKS; y++) {
+            for (int z = 0; z < config::MAP_SIDE_IN_CHUNKS; z++) {
+                chunks[x][y][z].generate_mesh();
+            }
         }
     }
+}
+
+void World::draw_all(Texture &atlas, bool drawBoundingBox) {
+    for (int x = 0; x < config::MAP_SIDE_IN_CHUNKS; x++) {
+        for (int y = 0; y < config::MAP_HEIGHT_IN_CHUNKS; y++) {
+            for (int z = 0; z < config::MAP_SIDE_IN_CHUNKS; z++) {
+                chunks[x][y][z].draw_chunk(atlas, drawBoundingBox);
+            }
+        }
+    }
+
 }
 
 
