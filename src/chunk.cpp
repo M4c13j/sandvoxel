@@ -156,6 +156,7 @@ void Chunk::generate_mesh() {
         }
     }
 
+    UnloadMesh(chunkMesh);
     chunkMesh = {};
 
     chunkMesh.vertices = vertices;
