@@ -67,15 +67,24 @@ void Chunk::draw_chunk(Texture &text, bool drawBoundingBox) {
     // UnloadModel(model);
 }
 
-
+const Cord FACE_NORMALS_CORD[] = { // temporary TODO: remove it
+    {0, 0, 1},
+    {0, 0,-1},
+    {0, 1, 0},
+    {0,-1, 0},
+    {1, 0, 0},
+    {-1, 0, 0}
+};
 // Returns visibilit of block at dir from pos. CHecks neighbouring chunk if needed.
 bool Chunk::is_visible_face(Cord pos, Dir dir) {
-    Cord nextPos= pos + FACE_NORMALS[dir];
+    Cord nextPos
+        = {pos.x + FACE_NORMALS_CORD[dir].x, pos.y + FACE_NORMALS_CORD[dir].y, pos.z + FACE_NORMALS_CORD[dir].z};
     if (is_in_chunk(nextPos)) {
         return get_block(nextPos.x, nextPos.y, nextPos.z).is_transparent();
     }
 
-    if (neighbours[dir] == nullptr) return false;
+    if (neighbours[dir] == nullptr)
+        return false;
 
     switch (dir) {
         case DIR_NORTH: nextPos.z = 0; break;

@@ -29,7 +29,6 @@ const Vector3 FACE_NORMALS[] = {
     {-1.0f, 0.0f, 0.0f}
 };
 
-
 struct FacePlacementData {
     float *vertices;
     float *texcoords;
