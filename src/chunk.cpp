@@ -102,7 +102,7 @@ int Chunk::check_visible_faces() {
                 Cord pos{x,y,z};
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
                     if (is_visible_face(pos, static_cast<Dir>(dir))) {
-                        curr.visible &= 1 << dir;
+                        curr.visible |= 1 << dir;
                         visCount++;
                     }
                 }
