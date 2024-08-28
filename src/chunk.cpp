@@ -20,9 +20,9 @@ void Chunk::generate_default_blocks(int airLevel) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 if (y< airLevel)
-                    blocks[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
+                    blocks[x][y][z] = Block(Block::DirtPlank);
                 else
-                    blocks[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
+                    blocks[x][y][z] = Block(Block::Air);
 
             }
         }
@@ -42,9 +42,9 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
             nonEmptyBlocks += glevel;
             for (int y = 0; y < config::CHUNK_SIZE; y++) {
                 if (y < glevel) {
-                    blocks[x][y][z] = Block(Block::DirtPlank, 0, 0, {x,y,z});
+                    blocks[x][y][z] = Block(Block::DirtPlank);
                 } else {
-                    blocks[x][y][z] = Block(Block::Air, 0.5, 0.5, {x,y,z});
+                    blocks[x][y][z] = Block(Block::Air);
                 }
             }
         }
@@ -121,7 +121,6 @@ void Chunk::update_visibility() {
 void Chunk::generate_mesh() {
     if (isEmpty())
         return; // why bother?
-
     visibleFaces = check_visible_faces();
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * visibleFaces;

@@ -31,16 +31,22 @@ int main(int argc, char** argv)
     chunk.update_visibility();
     chunk.generate_mesh();
 
-    Block bb = Block(Block::DirtPlank, 0, 0);
+    Block bb = Block(Block::DirtPlank);
 
     World *world = new World(); // stack overfow for bigger worlds if allocated on stack;
 
     Benchmark bench("Chunk mesh ", 1);
+    Benchmark single("Single chunk mesh, with neighbours", 1);
     bench.start();
         world->generate_perlin_chunks(2137u);
         world->mesh_all_chunks();
-    bench.stop(world->side * world->side * world->height);
-
+    bench.stop(World::side * World::side * World::height);
+    single.start();
+        int single_iters = 1000;
+        for (int i = 0; i < single_iters; i++) {
+            world->get_chunk_raw_access({world->side/2, world->height/2, world->side/2}).generate_mesh();
+        }
+    single.stop(single_iters);
 
     // printf("DEBUGGER\n"); return 0;
     // Main loop ==============================
@@ -90,7 +96,8 @@ int main(int argc, char** argv)
 
     CloseWindow();
     bench.results();
-    world->print_size_report();
+    single.results();
+    // world->print_size_report();
     delete world;
     // UnloadTexture(planktxt);
     // UnloadModel(model);

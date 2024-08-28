@@ -57,11 +57,10 @@ struct Cord {
         z = vec.z;
     }
 
-    operator Vector3() const { return Vector3{(float)x, (float)y, (float)z}; }
-    Vector3 toVec3() const { return Vector3{(float)x, (float)y, (float)z}; }
-    Cord    operator+(const Cord &rhs) const { return Cord(x + rhs.x, y + rhs.y, z + rhs.z); }
-    Cord    operator-(const Cord &rhs) const { return Cord(x - rhs.x, y - rhs.y, z - rhs.z); }
-    void    shift(int d) {
+    operator Vector3() const { return Vector3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}; }
+    Cord operator+(const Cord &rhs) const { return {x + rhs.x, y + rhs.y, z + rhs.z}; }
+    Cord operator-(const Cord &rhs) const { return {x - rhs.x, y - rhs.y, z - rhs.z}; }
+    void shift(int d) {
         x -= d;
         y -= d;
         z -= d;
@@ -71,7 +70,7 @@ struct Cord {
         y *= t;
         z *= t;
     }
-    std::string toString() {
+    std::string toString() const {
         return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
     }
 };
@@ -80,18 +79,15 @@ struct Cord {
 // Block will of course be optimised in future, it has many redundant stuff, but for now it is what it is.
 class Block {
 public:
-    bool           isTrans = false;
-    float          tx = 0.0f; // position of texture in texture map. Constructor should do the magic
-    float          ty = 0.0f; // Assuming: every face same texture for now
+    bool isTrans = false;
     enum Type { Air, Dirt, Plank, DirtPlank, TypeCount } type;
     std::bitset<6> visible = 0; // is face visible
 
-                Block() = default;
-                explicit Block(Type type) : type(type){};
-                Block(Type type, int tx, int ty) : type(type), tx(tx), ty(ty){};
-                Block(Type type, int tx, int ty, Cord pos) : type(type), tx(tx), ty(ty){};
-    ~           Block()= default;
-    void setType(Type newType) { type = newType; }
+             Block() = default;
+    explicit Block(Type type) : type(type){};
+    // Block(Type type) : type(type) {};
+    ~           Block() = default;
+    void        setType(Type newType) { type = newType; }
     inline bool is_transparent() { return type == Air; }
     void        generate_face(FacePlacementData &dest, Dir dir, Cord pos);
     void        draw_face(Cord pos, Dir dir);
