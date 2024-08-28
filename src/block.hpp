@@ -86,11 +86,11 @@ public:
              Block() = default;
     explicit Block(Type type) : type(type){};
     // Block(Type type) : type(type) {};
-    ~           Block() = default;
-    void        setType(const Type newType) { type = newType; }
+    ~                  Block() = default;
+    void               setType(const Type newType) { type = newType; }
     [[nodiscard]] bool is_transparent() const { return type == Air; }
-    void        generate_face(FacePlacementData &dest, Dir dir, Cord pos);
-    void        draw_face(Cord pos, Dir dir);
+    void               generate_face(FacePlacementData &dest, Dir dir, Cord pos);
+    void               draw_face(Cord pos, Dir dir);
 };
 
 inline Dir inverse_dir(Dir dir) {

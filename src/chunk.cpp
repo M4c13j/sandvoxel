@@ -103,12 +103,12 @@ int Chunk::check_visible_faces() {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block &curr = blocks[x][y][z];
+                Block &curr  = blocks[x][y][z];
                 curr.visible = 0;
                 if (curr.is_transparent())
                     continue; // do not draw Air
 
-                Cord pos{x,y,z};
+                Cord pos{x, y, z};
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
                     if (is_visible_face(pos, static_cast<Dir>(dir))) {
                         curr.visible |= 1 << dir;
