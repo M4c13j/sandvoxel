@@ -87,8 +87,8 @@ public:
     explicit Block(Type type) : type(type){};
     // Block(Type type) : type(type) {};
     ~           Block() = default;
-    void        setType(Type newType) { type = newType; }
-    inline bool is_transparent() { return type == Air; }
+    void        setType(const Type newType) { type = newType; }
+    [[nodiscard]] bool is_transparent() const { return type == Air; }
     void        generate_face(FacePlacementData &dest, Dir dir, Cord pos);
     void        draw_face(Cord pos, Dir dir);
 };

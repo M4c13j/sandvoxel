@@ -121,12 +121,6 @@ int Chunk::check_visible_faces() {
     return visCount;
 }
 
-//temoprarily disabled
-void Chunk::update_visibility() {
-    printf("GAYASS\n\n\n");
-    inverse_dir(DIR_DOWN);
-}
-
 void Chunk::generate_mesh() {
     if (isEmpty())
         return; // why bother?

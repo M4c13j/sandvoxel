@@ -15,8 +15,8 @@ public:
     int         id             = 0;
     Cord        cords          = {0, 0, 0}; // x,z - grid. y - height offset
     Vector3     drawPos        = {0, 0, 0}; // posotion of block in direction of {-1, -1, -1}.
-    Block       blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
     Chunk      *neighbours[DIR_COUNT] = {nullptr};
+    Block       blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
     Mesh        chunkMesh             = {};
     Model       model                 = {};
     BoundingBox boundingBox          = {};
@@ -32,12 +32,11 @@ public:
         nonEmptyBlocks += (curr.type == Block::Air && newType != Block::Air); // Air to solid block then +1
         curr.setType(newType);
     }
-    bool isEmpty() const { return nonEmptyBlocks == 0; }
-    bool isVisible() const { return !isEmpty() && visibleFaces != 0; }
+    [[nodiscard]] bool isEmpty() const { return nonEmptyBlocks == 0; }
+    [[nodiscard]] bool isVisible() const { return !isEmpty() && visibleFaces != 0; }
     bool is_visible_face(Cord pos, Dir dir);
 
     int  check_visible_faces(); // fills visible array of blocks, returns num of visible faces
-    void update_visibility();   // whole chunk
     void update_visibility_block(int x, int y, int z);
     void generate_default_blocks(int airLevel);
     void generate_perlin(uint_fast32_t seed);

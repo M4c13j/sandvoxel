@@ -30,13 +30,13 @@ public:
     }
     // TODO: uses array positions, not "actual" cordinates
     // returns Cord with index of chunk that pos is in.
-    Cord chunk_cord_from_position(Vector3 pos) const {
+    [[nodiscard]] Cord chunk_cord_from_position(Vector3 pos) const {
         return {static_cast<int>((pos.x - drawOffset.x) / config::CHUNK_SIZE),
                 static_cast<int>((pos.y - drawOffset.y) / config::CHUNK_SIZE),
                 static_cast<int>((pos.z - drawOffset.z) / config::CHUNK_SIZE)};
     }
     // returns Cord with index of chunk that pos is in.
-    Cord chunk_cord_from_position(int x, int y, int z) const {
+    [[nodiscard]] Cord chunk_cord_from_position(int x, int y, int z) const {
         return {(x - static_cast<int>(drawOffset.x)) / config::CHUNK_SIZE,
                 (y - static_cast<int>(drawOffset.y)) / config::CHUNK_SIZE,
                 (z - static_cast<int>(drawOffset.z)) / config::CHUNK_SIZE};

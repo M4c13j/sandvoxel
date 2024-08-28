@@ -28,7 +28,6 @@ int main(int argc, char** argv)
     Chunk chunk = Chunk({0, -config::CHUNK_SIZE/2,0}, 0);
     // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_perlin(2137u);
-    chunk.update_visibility();
     chunk.generate_mesh();
 
     Block bb = Block(Block::DirtPlank);
