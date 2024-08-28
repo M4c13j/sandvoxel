@@ -47,6 +47,7 @@ int main(int argc, char** argv)
             world->get_chunk_raw_access({world->side/2, world->height/2, world->side/2}).generate_mesh();
         }
     single.stop(single_iters);
+    // return 0;
 
     // printf("DEBUGGER\n"); return 0;
     // Main loop ==============================

@@ -99,8 +99,6 @@ const unsigned short FACE_INDICES[] = {
 
 // Modifies dest pointers.
 void Block::generate_face(FacePlacementData &dest, Dir dir, Cord pos) {
-    assert(dir < 6);
-
     int off_vert_norm = VERTEX_DATA_PER_FACE * dir; // vert_data * vert_per_face * faces
     int off_texs = TEXTURE_DATA_PER_FACE * dir; // tex_coords * verts_per_face * faces
     // no tak, bo memcpy chce rozmiar struktury, a nie ilośc elementow :(

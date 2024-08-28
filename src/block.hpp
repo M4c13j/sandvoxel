@@ -60,6 +60,7 @@ struct Cord {
     operator Vector3() const { return Vector3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}; }
     Cord operator+(const Cord &rhs) const { return {x + rhs.x, y + rhs.y, z + rhs.z}; }
     Cord operator-(const Cord &rhs) const { return {x - rhs.x, y - rhs.y, z - rhs.z}; }
+    void operator+=(const Cord &rhs) { x += rhs.x; y += rhs.y; z += rhs.z; }
     void shift(int d) {
         x -= d;
         y -= d;
@@ -81,7 +82,7 @@ class Block {
 public:
     bool isTrans = false;
     enum Type { Air, Dirt, Plank, DirtPlank, TypeCount } type;
-    std::bitset<6> visible = 0; // is face visible
+    uint8_t visible = 0; // indexed with index of dir ** 2.
 
              Block() = default;
     explicit Block(Type type) : type(type){};
