@@ -10,22 +10,27 @@
 static_assert(config::BLOCKS_IN_CHUNK * 6 <= UINT16_MAX, "Total number of visible faces may not fit in uint16.");
 class Chunk {
 public:
-    uint16_t nonEmptyBlocks        = 0;
-    uint16_t visibleFaces          = 0;
+    uint16_t    nonEmptyBlocks        = 0;
+    uint16_t    visibleFaces          = 0;
     int         id                    = 0;
     Cord        cords                 = {0, 0, 0}; // x,z - grid. y - height offset
     Vector3     drawPos               = {0, 0, 0}; // posotion of block in direction of {-1, -1, -1}.
     BoundingBox boundingBox           = {};
     Chunk      *neighbours[DIR_COUNT] = {nullptr};
-    Model       model                 = LoadModelFromMesh({0});
+    Model       model                 = {};
     Block       blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
 
-             Chunk() = default;
-    explicit Chunk(Cord cords) : cords(cords), blocks{} {}
-             Chunk(Cord cords, int id) : id(id), cords(cords), blocks{} {}
-    ~        Chunk();
-    Block   &get_block(int x, int y, int z) { return blocks[x][y][z]; }
-    void     setBlockType(int x, int y, int z, Block::Type newType) {
+    Chunk() : blocks{} {
+        model = LoadModelFromMesh({});
+        model.meshes = new Mesh();
+    }
+    Chunk(Cord cords, int id) : id(id), cords(cords), blocks{} {
+        model = LoadModelFromMesh({});
+        model.meshes = new Mesh();
+    }
+    ~      Chunk();
+    Block &get_block(int x, int y, int z) { return blocks[x][y][z]; }
+    void   setBlockType(int x, int y, int z, Block::Type newType) {
         Block &curr = blocks[x][y][z];
         nonEmptyBlocks -= (newType == Block::Air && curr.type != Block::Air); // Solid to air then -1
         nonEmptyBlocks += (curr.type == Block::Air && newType != Block::Air); // Air to solid block then +1

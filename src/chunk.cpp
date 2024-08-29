@@ -13,7 +13,6 @@
 
 Chunk::~Chunk() {
     // UnloadModel(model);
-    // UnloadMesh(chunkMesh);
 }
 
 void Chunk::generate_default_blocks(int airLevel) {
@@ -131,6 +130,10 @@ void Chunk::generate_mesh() {
     const int TEXTURE_DATA_TOTAL = TEXTURE_DATA_PER_FACE * visibleFaces;
     const int INDICES_DATA_TOTAL = INDICES_DATA_PER_FACE * visibleFaces;
 
+    UnloadMesh(model.meshes[0]);
+    if (visibleFaces > 0)
+        return; // do not allocate memory or other things if there ar no face visible.
+
     float *vertices = (float*) RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float));
     float *texcoords = (float*) RL_MALLOC(TEXTURE_DATA_TOTAL * sizeof(float));
     float *normals = (float*) RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float));
@@ -159,20 +162,15 @@ void Chunk::generate_mesh() {
         }
     }
     Mesh &chunkMeshRef = model.meshes[0];
-    // UnloadModel(model);
-    UnloadMesh(chunkMeshRef);
-    chunkMeshRef = {};
 
     chunkMeshRef.vertices = vertices;
     chunkMeshRef.texcoords = texcoords;
     chunkMeshRef.normals = normals;
     chunkMeshRef.indices = indices;
-
     chunkMeshRef.triangleCount = indexCount; // change it
     chunkMeshRef.vertexCount = vertexCount;
 
     UploadMesh(&chunkMeshRef, false);
-    // model = LoadModelFromMesh(chunkMeshRef);
     model.meshes[0] = chunkMeshRef;
     boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }

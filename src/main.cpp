@@ -50,8 +50,8 @@ int main(int argc, char** argv)
 
     //==================================== RLGL (opengl abstr) changes ============================================
     rlSetLineWidth(2.0f); // lines are finally more visible and not as annoying
-
     // rlEnableWireMode(); // Draw wires only!
+
     // Main loop ==============================
     while (!WindowShouldClose()) {
         UpdateCamera(&player.camera, CAMERA_FREE);
@@ -71,6 +71,13 @@ int main(int argc, char** argv)
         //     // world->get_chunk_raw_access({10, 5, 10}).generate_mesh();
         //     world->get_chunk_raw_access({world->side/2, world->height/2, world->side/2}).generate_mesh();
         // }
+
+        // Wire debugger
+        if (IsKeyDown(KEY_R))
+            rlEnableWireMode();
+        else
+            rlDisableWireMode();
+
         BeginMode3D(player.camera);
             DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);
             DrawCubeV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, PURPLE);
