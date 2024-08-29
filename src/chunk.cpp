@@ -76,7 +76,7 @@ const Cord FACE_NORMALS_CORD[] = { // temporary TODO: remove it
     {-1, 0, 0}
 };
 // Returns visibilit of block at dir from pos. CHecks neighbouring chunk if needed.
-bool Chunk::is_visible_face(Cord pos, Dir dir) {
+bool Chunk::is_visible_face(const Cord pos, const Dir dir) {
     Cord nextPos
         = {pos.x + FACE_NORMALS_CORD[dir].x, pos.y + FACE_NORMALS_CORD[dir].y, pos.z + FACE_NORMALS_CORD[dir].z};
     if (is_in_chunk(nextPos)) {
@@ -98,7 +98,7 @@ bool Chunk::is_visible_face(Cord pos, Dir dir) {
     return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z).is_transparent();
 }
 
-int Chunk::check_visible_faces() {
+void Chunk::check_visible_faces() {
     int visCount = 0;
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
@@ -118,20 +118,21 @@ int Chunk::check_visible_faces() {
             }
         }
     }
-    return visCount;
+    visibleFaces = visCount;
 }
 
 void Chunk::generate_mesh() {
     if (isEmpty())
         return; // why bother?
-    visibleFaces = check_visible_faces();
+
+    check_visible_faces(); // find all visible faces if there are any
+
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * visibleFaces;
     const int TEXTURE_DATA_TOTAL = TEXTURE_DATA_PER_FACE * visibleFaces;
     const int INDICES_DATA_TOTAL = INDICES_DATA_PER_FACE * visibleFaces;
 
-    UnloadMesh(model.meshes[0]);
-    if (visibleFaces > 0)
+    if (visibleFaces == 0)
         return; // do not allocate memory or other things if there ar no face visible.
 
     float *vertices = (float*) RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float));
@@ -161,6 +162,9 @@ void Chunk::generate_mesh() {
             }
         }
     }
+
+    UnloadMesh(model.meshes[0]);
+    model.meshes = new Mesh();
     Mesh &chunkMeshRef = model.meshes[0];
 
     chunkMeshRef.vertices = vertices;
@@ -170,7 +174,7 @@ void Chunk::generate_mesh() {
     chunkMeshRef.triangleCount = indexCount; // change it
     chunkMeshRef.vertexCount = vertexCount;
 
-    UploadMesh(&chunkMeshRef, false);
+    UploadMesh(model.meshes, true);
     model.meshes[0] = chunkMeshRef;
     boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }

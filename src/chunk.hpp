@@ -40,7 +40,7 @@ public:
     [[nodiscard]] bool isVisible() const { return !isEmpty() && visibleFaces != 0; }
     bool               is_visible_face(Cord pos, Dir dir);
 
-    int  check_visible_faces(); // fills visible array of blocks, returns num of visible faces
+    void  check_visible_faces(); // fills visible array of blocks
     void update_visibility_block(int x, int y, int z);
     void generate_default_blocks(int airLevel);
     void generate_perlin(uint_fast32_t seed);
@@ -50,7 +50,7 @@ public:
                         int index); // obsolete, dont use it now. Generate face through blocks.
 };
 
-inline bool is_in_chunk(Cord pos) {
+inline bool is_in_chunk(const Cord pos) {
     return (pos.x < config::CHUNK_SIZE && pos.x >= 0) && (pos.y < config::CHUNK_SIZE && pos.y >= 0)
            && (pos.z < config::CHUNK_SIZE && pos.z >= 0);
 }
