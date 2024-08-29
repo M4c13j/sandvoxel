@@ -9,6 +9,7 @@
 #include "perlin.hpp"
 #include "raylib.h"
 #include "raymath.h"
+#include "rlgl.h"
 
 Chunk::~Chunk() {
     // UnloadModel(model);
@@ -157,21 +158,23 @@ void Chunk::generate_mesh() {
             }
         }
     }
+    Mesh &chunkMeshRef = model.meshes[0];
+    // UnloadModel(model);
+    UnloadMesh(chunkMeshRef);
+    chunkMeshRef = {};
 
-    UnloadMesh(chunkMesh);
-    chunkMesh = {};
+    chunkMeshRef.vertices = vertices;
+    chunkMeshRef.texcoords = texcoords;
+    chunkMeshRef.normals = normals;
+    chunkMeshRef.indices = indices;
 
-    chunkMesh.vertices = vertices;
-    chunkMesh.texcoords = texcoords;
-    chunkMesh.normals = normals;
-    chunkMesh.indices = indices;
+    chunkMeshRef.triangleCount = indexCount; // change it
+    chunkMeshRef.vertexCount = vertexCount;
 
-    chunkMesh.triangleCount = indexCount; // change it
-    chunkMesh.vertexCount = vertexCount;
-
-    UploadMesh(&chunkMesh, false);
-    model = LoadModelFromMesh(chunkMesh);
-    boundingBox = GetMeshBoundingBox(chunkMesh);
+    UploadMesh(&chunkMeshRef, false);
+    // model = LoadModelFromMesh(chunkMeshRef);
+    model.meshes[0] = chunkMeshRef;
+    boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }
 
 void Chunk::gen_mesh_block(float *vertPt, float *texPt, float *normalPt,

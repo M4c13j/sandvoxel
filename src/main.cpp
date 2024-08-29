@@ -1,14 +1,16 @@
+#include "benchmark.hpp"
+#include "chunk.hpp"
+#include "config.hpp"
+#include "player.hpp"
 #include "raylib.h"
 #include "raymath.h"
-#include <cstdio>
-#include <string>
-#include <map>
-#include <cassert>
-#include "player.hpp"
-#include "chunk.hpp"
 #include "world.hpp"
-#include "config.hpp"
-#include "benchmark.hpp"
+#include <cassert>
+#include <cstdio>
+#include <map>
+#include <string>
+
+#include <rlgl.h>
 
 // #define ANKERL_NANOBENCH_IMPLEMENT
 // #include "nanobench.h"
@@ -48,7 +50,10 @@ int main(int argc, char** argv)
     single.stop(single_iters);
     // return 0;
 
-    // printf("DEBUGGER\n"); return 0;
+    //==================================== RLGL (opengl abstr) changes ============================================
+    rlSetLineWidth(2.0f); // lines are finally more visible and not as annoying
+
+    // rlEnableWireMode(); // Draw wires only!
     // Main loop ==============================
     while (!WindowShouldClose()) {
         UpdateCamera(&player.camera, CAMERA_FREE);

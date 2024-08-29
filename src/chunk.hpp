@@ -15,15 +15,14 @@ public:
     int         id                    = 0;
     Cord        cords                 = {0, 0, 0}; // x,z - grid. y - height offset
     Vector3     drawPos               = {0, 0, 0}; // posotion of block in direction of {-1, -1, -1}.
+    BoundingBox boundingBox           = {};
     Chunk      *neighbours[DIR_COUNT] = {nullptr};
+    Model       model                 = LoadModelFromMesh({0});
     Block       blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
-    Mesh        chunkMesh   = {};
-    Model       model       = {};
-    BoundingBox boundingBox = {};
 
              Chunk() = default;
-    explicit Chunk(Cord cords) : cords(cords) {}
-             Chunk(Cord cords, int id) : cords(cords), id(id) {}
+    explicit Chunk(Cord cords) : cords(cords), blocks{} {}
+             Chunk(Cord cords, int id) : id(id), cords(cords), blocks{} {}
     ~        Chunk();
     Block   &get_block(int x, int y, int z) { return blocks[x][y][z]; }
     void     setBlockType(int x, int y, int z, Block::Type newType) {
