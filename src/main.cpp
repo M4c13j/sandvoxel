@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 {
     // Initialize raylib ======================
     InitWindow(1200, 700, "Raylib + ImGui Example");
-    // SetTargetFPS(60);
+    SetTargetFPS(60);
     SetWindowState(FLAG_WINDOW_RESIZABLE ); //| FLAG_BORDERLESS_WINDOWED_MODE);
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT); // Anti-aliasing and V-Sync
 
@@ -32,8 +32,6 @@ int main(int argc, char** argv)
     chunk.generate_perlin(2137u);
     chunk.generate_mesh();
 
-    Block bb = Block(Block::DirtPlank);
-
     World *world = new World(); // stack overfow for bigger worlds if allocated on stack;
 
     Benchmark bench("Chunk mesh ", 1);
@@ -45,7 +43,7 @@ int main(int argc, char** argv)
     single.start();
         int single_iters = 1000;
         for (int i = 0; i < single_iters; i++) {
-            world->get_chunk_raw_access({world->side/2, world->height/2, world->side/2}).generate_mesh();
+            world->get_chunk_raw_access({13, 2, 1}).generate_mesh();
         }
     single.stop(single_iters);
     // return 0;
