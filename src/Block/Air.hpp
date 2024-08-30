@@ -3,17 +3,17 @@
 
 class Air : public Block {
 public:
-    static Air &getInstance() {
-        static Air singleton;
-        return singleton;
-    }
+              Air()          = default;
+    // ~         Air() override = default;
+    void      init() override {}
+    bool      isTransparent() override { return trans; }
+    BlockType getType() override { return type; }
+    u_char   *getColors() override { return colors; }
+    float    *getTexcoords() override { return texcoords; }
 
 private:
-    Air() {
-        type = BlockType::Air;
-        isTransparent = true;
-
-        std::fill(std::begin(texcoords), std::end(texcoords), 0.0f);
-        std::fill(std::begin(colors), std::end(colors), 0.0f);
-    }
+    static bool      trans;
+    static BlockType type;
+    static u_char    colors[COLOR_DATA_PER_FACE * 6];
+    static float texcoords[TEXTURE_DATA_PER_FACE * 6]; // texture data for every face (indexed by normal from given Dir
 };

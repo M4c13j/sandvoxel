@@ -1,19 +1,17 @@
 #pragma once
 #include "block.hpp"
 
+#include <algorithm>
+
 class Sand : public Block {
 public:
-    static Sand &getInstance() {
-        static Sand singleton;
-        return singleton;
-    }
-
-private:
-    Sand() {
-        type = BlockType::Sand;
-        isTransparent = false;
-
-        std::fill(std::begin(texcoords), std::end(texcoords), 0.0f);
+         Sand()          = default;
+    // ~    Sand() override = default;
+    void init() override {
+        // type          = BlockType::Air;
+        // trans= false;
+        //
+        // std::fill(std::begin(texcoords), std::end(texcoords), 0.0f);
         Color col = YELLOW;
         for (int i = 0; i < COLOR_DATA_PER_FACE * 6; i += 4) {
             colors[i]     = col.r;
@@ -22,6 +20,14 @@ private:
             colors[i + 3] = col.a;
         }
     }
+    bool      isTransparent() override { return trans; }
+    BlockType getType() override { return type; }
+    u_char   *getColors() override { return colors; }
+    float    *getTexcoords() override { return texcoords; };
+
+private:
+    static bool      trans;
+    static BlockType type;
+    static u_char    colors[COLOR_DATA_PER_FACE * 6];
+    static float texcoords[TEXTURE_DATA_PER_FACE * 6]; // texture data for every face (indexed by normal from given Dir
 };
-
-

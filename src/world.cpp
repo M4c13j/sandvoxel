@@ -18,6 +18,8 @@ World::World() {
     float normalOffset = (-1) * (float)config::CHUNK_SIZE * side / 2;
     drawOffset         = {normalOffset, heightOffset, normalOffset};
 
+    BlockFactory::getInstance().initBlocks(); // initialise static members etc.
+
     for (int x = 0; x < config::MAP_SIDE_IN_CHUNKS; x++) {
         for (int y = 0; y < config::MAP_HEIGHT_IN_CHUNKS; y++) {
             for (int z = 0; z < config::MAP_SIDE_IN_CHUNKS; z++) {
@@ -72,11 +74,11 @@ void World::mesh_all_chunks() {
     }
 }
 
-void World::draw_all(Texture &atlas, bool drawBoundingBox) {
+void World::draw_all(Texture &atlas, DrawChunkFlags flags) {
     for (auto &plane: chunks) {
         for (auto &row : plane) {
             for (auto &chunk : row) {
-                chunk.draw_chunk(atlas, drawBoundingBox);
+                chunk.draw_chunk(atlas, flags);
             }
         }
     }

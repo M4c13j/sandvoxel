@@ -134,6 +134,7 @@ const unsigned short FACE_INDICES[] = {
     0, 1, 2, 0, 2, 3
 };
 
+Block::~Block() = default;
 
 // Modifies dest pointers.
 void Block::generate_face(FacePlacementData &dest, Dir dir, Cord pos) {
@@ -153,8 +154,8 @@ void Block::generate_face(FacePlacementData &dest, Dir dir, Cord pos) {
         dest.indices[i] += dest.indicesOffset;
     }
     // Block-type dependent
-    std::copy_n(texcoords + off_texs, TEXTURE_DATA_PER_FACE, dest.texcoords);
-    std::copy_n(colors + off_cols, COLOR_DATA_PER_FACE, dest.colors);
+    std::copy_n(getTexcoords() + off_texs, TEXTURE_DATA_PER_FACE, dest.texcoords);
+    std::copy_n(getColors() + off_cols, COLOR_DATA_PER_FACE, dest.colors);
 }
 
 void Block::draw_face(Cord pos, Dir dir) {

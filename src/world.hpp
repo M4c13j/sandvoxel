@@ -50,7 +50,7 @@ public:
     void   setBlock(int x, int y, int z, const BlockType newType) { get_chunk(x,y,z).setBlockType(x%config::CHUNK_SIZE, y%config::CHUNK_SIZE, z%config::CHUNK_SIZE, newType); }
     void   mesh_all_chunks();
     void   mesh_chunk(Cord pos);
-    void   draw_all(Texture &atlas, bool drawBoundingBox);
+    void   draw_all(Texture &atlas, DrawChunkFlags flags);
     void   print_size_report() const;
 };
 

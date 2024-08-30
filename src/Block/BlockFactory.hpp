@@ -8,11 +8,25 @@
 
 class BlockFactory {
 public:
-    static Block *getInstance(BlockType type) {
-        if (type == BlockType::Air) return &Air::getInstance();
-        if (type == BlockType::Sand) return &Sand::getInstance();
-        assert(false);
-        // if (type == Air) return Air::getInstance();
-        return nullptr; // haha evil as hell
+    static BlockFactory& getInstance() {
+        static BlockFactory fact;
+        return fact;
     }
+
+    Block *getObjectFromType(BlockType type) {
+        assert(classesInitialised); // "Classes have not been initialised!"
+        if (type == BlockType::Air) return new Air();
+        if (type == BlockType::Sand) return new Sand();
+        assert(false);
+    }
+
+    void initBlocks() {
+        Air().init();
+        Sand().init();
+        classesInitialised = true;
+    }
+
+private:
+    bool classesInitialised = false;
+
 };

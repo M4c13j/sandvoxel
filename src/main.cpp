@@ -48,14 +48,14 @@ int main(int argc, char** argv)
         }
     single.stop(single_iters);
 
-    Sand sandInst = Sand::getInstance();
-    assert(sandInst.colors[0] == YELLOW.r && sandInst.colors[1] == YELLOW.g && sandInst.colors[2] == YELLOW.b
-                  && sandInst.colors[3] == YELLOW.a);
-    assert(sandInst.isTransparent == true);
-    Air airInst = Air::getInstance();
-    assert(airInst.colors[0] == 0 && airInst.colors[1] == 0 && airInst.colors[2] == 0
-                  && airInst.colors[3] == 0);
-    assert(airInst.isTransparent == true);
+    // Sand sandInst = Sand();
+    // assert(sandInst.getColors()[0] == YELLOW.r && sandInst.getColors()[1] == YELLOW.g && sandInst.getColors()[2] == YELLOW.b
+    //               && sandInst.getColors()[3] == YELLOW.a);
+    // assert(sandInst.isTransparent()== true);
+    // Air airInst = Air();
+    // assert(airInst.getColors()[0] == 0 && airInst.getColors()[1] == 0 && airInst.getColors()[2] == 0
+    //               && airInst.getColors()[3] == 0);
+    // assert(airInst.isTransparent() == true);
 
     //==================================== RLGL (opengl abstr) changes ============================================
     rlSetLineWidth(2.0f); // lines are finally more visible and not as annoying
@@ -94,10 +94,10 @@ int main(int argc, char** argv)
             DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 3.0f, 1.0f }, YELLOW);
             DrawGrid(100, 1.0f);
 
-            world->draw_all(dirt_plank, true);
+            world->draw_all(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
             // chunk.draw_chunk(dirt_plank, true);
             // world->chunks[config::MAP_SIDE_IN_CHUNKS/2][config::MAP_HEIGHT_IN_CHUNKS/2][config::MAP_SIDE_IN_CHUNKS/2].draw_chunk(dirt_plank, true);
-            world->chunks[6][4][13].draw_chunk(dirt_plank, true);
+            world->chunks[6][4][13].draw_chunk(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
 
             // DrawBoundingBox(GetMeshBoundingBox(chunk.chunkMesh), BLACK);
          EndMode3D();

@@ -3,6 +3,7 @@ project(Sandvoxel)
 
 #========= compiler =======
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_COMPILER /usr/bin/g++)
 
 #set(CMAKE_BUILD_TYPE Debug)
 # set(CMAKE_BUILD_TYPE Release) <- comment out such lines
@@ -59,14 +60,15 @@ add_executable(${PROJECT_NAME}
     ${SOURCE_DIR}/renderer.cpp
     ${SOURCE_DIR}/config.cpp
     src/Block/block.cpp
+#        src/Block/block.hpp
         src/Block/BlockFactory.cpp
-        src/Block/BlockFactory.hpp
+#        src/Block/BlockFactory.hpp
         src/Block/Sand.cpp
-        src/Block/Sand.hpp
+#        src/Block/Sand.hpp
         src/Block/Dirt.cpp
-        src/Block/Dirt.hpp
+#        src/Block/Dirt.hpp
         src/Block/Air.cpp
-        src/Block/Air.hpp
+#        src/Block/Air.hpp
 )
 
 # Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.

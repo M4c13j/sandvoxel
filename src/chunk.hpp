@@ -12,8 +12,10 @@ enum DrawChunkFlags {
     DRAW_BLOCK_WIRES              = 1 << 1, // every block wire
     DRAW_CHUNK_BOUNDING_BOX       = 1 << 2, // bound whole chunk area
     DRAW_CHUNK_DRAWN_BOUNDING_BOX = 1 << 3, // only bound what has been drawn
-    DRAW_CHUNK_DEBUG_FULL
-    = DRAW_DONT_CHUNK_MODEL | DRAW_BLOCK_WIRES | DRAW_CHUNK_BOUNDING_BOX | DRAW_CHUNK_DRAWN_BOUNDING_BOX
+    DRAW_CHUNK_DEBUG_WIRES
+    = DRAW_DONT_CHUNK_MODEL | DRAW_BLOCK_WIRES | DRAW_CHUNK_BOUNDING_BOX | DRAW_CHUNK_DRAWN_BOUNDING_BOX,
+    DRAW_CHUNK_DEBUG_WIRES_MODEL
+    = DRAW_BLOCK_WIRES | DRAW_CHUNK_BOUNDING_BOX | DRAW_CHUNK_DRAWN_BOUNDING_BOX
 };
 
 // Whether nonEmptyBlocks and visibleFaces make any sense BLOCKS in chunk TIMES faces
@@ -31,21 +33,32 @@ public:
     Model       model                 = {};
     Block *blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
 
-    Chunk() : blocks{} {
-        model = LoadModelFromMesh({});
-        model.meshes = new Mesh();
+    void init_blocks() {
+        for (int i = 0; i < config::CHUNK_SIZE; i++) {
+            for (int j = 0; j < config::CHUNK_SIZE; j++) {
+                for (int k = 0; k < config::CHUNK_SIZE; k++) {
+                    blocks[i][j][k] = new Air();
+                }
+            }
+        }
     }
-    Chunk(Cord cords, int id) : id(id), cords(cords), blocks{} {
+    Chunk() {
+        model        = LoadModelFromMesh({});
+        model.meshes = new Mesh();
+        init_blocks();
+    }
+    Chunk(Cord cords, int id) : id(id), cords(cords)  {
         model = LoadModelFromMesh({});
         model.meshes = new Mesh();
+        init_blocks();
     }
     ~         Chunk();
-    Block *get_block(int x, int y, int z) const { return blocks[x][y][z]; }
+    Block *get_block(int x, int y, int z) { return blocks[x][y][z]; }
     void   setBlockType(int x, int y, int z, BlockType newType) {
-        Block &curr = *blocks[x][y][z];
-        nonEmptyBlocks -= (newType == BlockType::Air && curr.type != BlockType::Air); // Solid to air then -1
-        nonEmptyBlocks += (curr.type == BlockType::Air && newType != BlockType::Air); // Air to solid block then +1
-        curr = *BlockFactory::getInstance(newType);
+        Block *curr = blocks[x][y][z];
+        nonEmptyBlocks -= (newType == BlockType::Air && curr->getType()!= BlockType::Air); // Solid to air then -1
+        nonEmptyBlocks += (curr->getType() == BlockType::Air && newType != BlockType::Air); // Air to solid block then +1
+        blocks[x][y][z] = BlockFactory::getInstance().getObjectFromType(newType);
     }
     [[nodiscard]] bool isEmpty() const { return nonEmptyBlocks == 0; }
     [[nodiscard]] bool isVisible() const { return !isEmpty() && visibleFaces != 0; }
@@ -55,7 +68,7 @@ public:
     void update_visibility_block(int x, int y, int z);
     void generate_default_blocks(int airLevel);
     void generate_perlin(uint_fast32_t seed);
-    void draw_chunk(Texture &text, int drawChunkFlags); // Chunk drawing flag are in DrawChunkFlags enum!. 0 draws just chunk, no debug
+    void draw_chunk(Texture &text, DrawChunkFlags flags); // Chunk drawing flag are in DrawChunkFlags enum!. 0 draws just chunk, no debug
     void generate_mesh();
     void gen_mesh_block(float *vertPt, float *texPt, float *normalPt, unsigned short *indiPt, Block &block, Vector3 pos,
                         int index); // obsolete, dont use it now. Generate face through blocks.

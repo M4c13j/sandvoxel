@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
-#include <bitset>
+
+#include <string>
 
 constexpr int VERTEX_DATA_PER_FACE  = 3 * 4; // for vertices and normals
 constexpr int TEXTURE_DATA_PER_FACE = 2 * 4;
@@ -90,17 +91,35 @@ enum class BlockType { Air = 0, Dirt, Plank, Sand, DirtPlank, TypeCount };
 
 // Alignment changed size of Block from 40B to 24B, just reordering shit around. Why compilers dont do it?
 // Block will of course be optimised in future, it has many redundant stuff, but for now it is what it is.
-// Blocks shall inherit from class Block and be Singletons.
+// Problem: I want isTransparent, type etc. to be static members of actual Block i.e. Sand block.
+// That's because I don't need to store copies of colors, texcoords in every single block (which are the same for every
+// isntance of block) but I want to be able to change state values like visible.
+// Structure:
+// Attributes are retrieved through getters.
+
 class Block {
 public:
-    uint8_t       visible = 0; // indexed with index of dir ** 2.
-    bool          isTransparent;
-    BlockType     type;
-    static u_char colors[COLOR_DATA_PER_FACE * 6];
-    static float  texcoords[TEXTURE_DATA_PER_FACE * 6]; // texture data for every face (indexed by normal from given Dir
+    uint8_t visible = 0; // indexed with index of dir ** 2.
+    // static bool      isTransparent;
+    // static BlockType type;
+    // static u_char    colors[COLOR_DATA_PER_FACE * 6];
+    // static float texcoords[TEXTURE_DATA_PER_FACE * 6]; // texture data for every face (indexed by normal from given
+    // Dir
 
-                        Block() = default;
-    [[nodiscard]] bool  is_transparent() const { return isTransparent; }
-    void                generate_face(FacePlacementData &dest, Dir dir, Cord pos);
-    [[deprecated]] void draw_face(Cord pos, Dir dir); // used for debuging, long time ago
+    virtual ~Block();
+    // virtual ~Block() = default;
+    // Block() = default;
+
+    void                      generate_face(FacePlacementData &dest, Dir dir, Cord pos);
+    [[deprecated]] void       draw_face(Cord pos, Dir dir); // used for debuging, long time ago
+    virtual bool isTransparent() =0;
+    virtual BlockType getType() =0;
+    virtual u_char* getColors() =0;
+    virtual float* getTexcoords() =0;
+    virtual void init() =0; // initialise members that are protected. To ensure that static mems are inited only once.
+    // it cannot be pure abstract because Block would be pure abstract and that would render making array of Blocks
+    // impossible.
+protected:
+    Block() = default;
 };
+

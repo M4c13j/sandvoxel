@@ -22,9 +22,9 @@ void Chunk::generate_default_blocks(int airLevel) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 if (y< airLevel)
-                    blocks[x][y][z] = &Sand::getInstance();
+                    blocks[x][y][z] = new Sand();
                 else
-                    blocks[x][y][z] = &Air::getInstance();
+                    blocks[x][y][z] = new Air();
             }
         }
     }
@@ -43,9 +43,9 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
             nonEmptyBlocks += glevel;
             for (int y = 0; y < config::CHUNK_SIZE; y++) {
                 if (y < glevel) {
-                    blocks[x][y][z] = &Sand::getInstance();
+                    blocks[x][y][z] = new Sand();
                 } else {
-                    blocks[x][y][z] = &Air::getInstance();
+                    blocks[x][y][z] = new Air();
                 }
             }
         }
@@ -55,17 +55,17 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
 /// If chunk model has a texture mapped to it, it would be drawn and color from mesh will tint its color.
 /// To draw mesh only from colors defined in mesh.colors you have to set materials texture to null and set color to
 /// WHITE (or other, it will act as TINT for colors defined in mesh).
-void Chunk::draw_chunk(Texture &text, int drawChunkFlags) {
+void Chunk::draw_chunk(Texture &text, DrawChunkFlags flags) {
     if (!isVisible())
         return; // empty chunk, don't waste time
 
     // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = WHITE;
     // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = text; // FOR TEXTURED MESH
-    bool drawChunkModel = !(drawChunkFlags & DRAW_DONT_CHUNK_MODEL);
+    bool drawChunkModel = !(flags & DRAW_DONT_CHUNK_MODEL);
     if (drawChunkModel) DrawModel(model, {0,0,0}, 1, WHITE);
-    if (drawChunkFlags & DRAW_BLOCK_WIRES) DrawModelWires(model, {0,0,0}, 1.0f, BLACK);
-    if (drawChunkFlags & DRAW_CHUNK_DRAWN_BOUNDING_BOX) DrawBoundingBox(boundingBox, BLACK);
-    if (drawChunkFlags & DRAW_CHUNK_BOUNDING_BOX) {
+    if (flags & DRAW_BLOCK_WIRES) DrawModelWires(model, {0,0,0}, 1.0f, BLACK);
+    if (flags & DRAW_CHUNK_DRAWN_BOUNDING_BOX) DrawBoundingBox(boundingBox, BLACK);
+    if (flags & DRAW_CHUNK_BOUNDING_BOX) {
         Vector3 cubeDrawPos = Vector3Add(drawPos, Vector3Scale({1,1,1}, config::CHUNK_SIZE/2));
         DrawCubeWires(cubeDrawPos, config::CHUNK_SIZE, config::CHUNK_SIZE, config::CHUNK_SIZE, BLUE);
     }
@@ -86,7 +86,7 @@ bool Chunk::is_visible_face(const Cord pos, const Dir dir) {
     Cord nextPos
         = {pos.x + FACE_NORMALS_CORD[dir].x, pos.y + FACE_NORMALS_CORD[dir].y, pos.z + FACE_NORMALS_CORD[dir].z};
     if (is_in_chunk(nextPos)) {
-        return get_block(nextPos.x, nextPos.y, nextPos.z)->is_transparent();
+        return get_block(nextPos.x, nextPos.y, nextPos.z)->isTransparent();
     }
 
     if (neighbours[dir] == nullptr)
@@ -101,7 +101,7 @@ bool Chunk::is_visible_face(const Cord pos, const Dir dir) {
         case DIR_WEST: nextPos.x = config::CHUNK_SIZE - 1; break;
         }
 
-    return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z)->is_transparent();
+    return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z)->isTransparent();
 }
 
 void Chunk::check_visible_faces() {
@@ -109,15 +109,15 @@ void Chunk::check_visible_faces() {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block &curr  = *blocks[x][y][z];
-                curr.visible = 0;
-                if (curr.is_transparent())
+                Block *curr  = blocks[x][y][z];
+                curr->visible = 0;
+                if (curr->isTransparent())
                     continue; // do not draw Air
 
                 Cord pos{x, y, z};
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
                     if (is_visible_face(pos, static_cast<Dir>(dir))) {
-                        curr.visible |= 1 << dir;
+                        curr->visible |= 1 << dir;
                         visCount++;
                     }
                 }
@@ -156,12 +156,12 @@ void Chunk::generate_mesh() {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block &curr = *blocks[x][y][z];
+                Block *curr = blocks[x][y][z];
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
-                    if (curr.visible & (1<<dir)) {
+                    if (curr->visible & (1<<dir)) {
                         Vector3 blockActualPos = Vector3Add(
                             drawPos, {static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)});
-                        curr.generate_face(placementData, static_cast<Dir>(dir), blockActualPos);
+                        curr->generate_face(placementData, static_cast<Dir>(dir), blockActualPos);
                         placementData.advance_face();
                         vertexCount += 4;
                         indexCount += 2;
