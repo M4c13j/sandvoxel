@@ -51,18 +51,23 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
     }
 }
 
-void Chunk::draw_chunk(Texture &text, bool drawBoundingBox) {
+/// If chunk model has a texture mapped to it, it would be drawn and color from mesh will tint its color.
+/// To draw mesh only from colors defined in mesh.colors you have to set materials texture to null and set color to
+/// WHITE (or other, it will act as TINT for colors defined in mesh).
+void Chunk::draw_chunk(Texture &text, int drawChunkFlags) {
     if (!isVisible())
         return; // empty chunk, don't waste time
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = text;
 
-    DrawModel(model, {0,0,0}, 1, WHITE);
-    if(drawBoundingBox) {
-        DrawBoundingBox(boundingBox, BLACK);
+    // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = WHITE;
+    // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = text; // FOR TEXTURED MESH
+    bool drawChunkModel = !(drawChunkFlags & DRAW_DONT_CHUNK_MODEL);
+    if (drawChunkModel) DrawModel(model, {0,0,0}, 1, WHITE);
+    if (drawChunkFlags & DRAW_BLOCK_WIRES) DrawModelWires(model, {0,0,0}, 1.0f, BLACK);
+    if (drawChunkFlags & DRAW_CHUNK_DRAWN_BOUNDING_BOX) DrawBoundingBox(boundingBox, BLACK);
+    if (drawChunkFlags & DRAW_CHUNK_BOUNDING_BOX) {
         Vector3 cubeDrawPos = Vector3Add(drawPos, Vector3Scale({1,1,1}, config::CHUNK_SIZE/2));
         DrawCubeWires(cubeDrawPos, config::CHUNK_SIZE, config::CHUNK_SIZE, config::CHUNK_SIZE, BLUE);
     }
-
     // UnloadMaterial(material);
     // UnloadModel(model);
 }
@@ -131,14 +136,15 @@ void Chunk::generate_mesh() {
     const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * visibleFaces;
     const int TEXTURE_DATA_TOTAL = TEXTURE_DATA_PER_FACE * visibleFaces;
     const int INDICES_DATA_TOTAL = INDICES_DATA_PER_FACE * visibleFaces;
+    const int COLOR_DATA_TOTAL = COLOR_DATA_PER_FACE * visibleFaces;
 
     if (visibleFaces == 0)
         return; // do not allocate memory or other things if there ar no face visible.
 
-    float *vertices = (float*) RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float));
-    float *texcoords = (float*) RL_MALLOC(TEXTURE_DATA_TOTAL * sizeof(float));
-    float *normals = (float*) RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float));
-    unsigned short *indices = (unsigned short *)RL_MALLOC(INDICES_DATA_TOTAL * sizeof(unsigned short));
+    auto *vertices = static_cast<float *>(RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float)));
+    auto *texcoords = static_cast<float *>(RL_MALLOC(TEXTURE_DATA_TOTAL * sizeof(float)));
+    auto *normals = static_cast<float *>(RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float)));
+    auto *indices = static_cast<unsigned short *>(RL_MALLOC(INDICES_DATA_TOTAL * sizeof(unsigned short)));
 
     FacePlacementData placementData = {vertices, texcoords, normals, indices, 0};
     int vertexCount = 0;
@@ -174,7 +180,15 @@ void Chunk::generate_mesh() {
     chunkMeshRef.triangleCount = indexCount; // change it
     chunkMeshRef.vertexCount = vertexCount;
 
-    UploadMesh(model.meshes, true);
+    free(chunkMeshRef.colors);
+    chunkMeshRef.colors = (unsigned char*) RL_MALLOC(COLOR_DATA_TOTAL * sizeof(unsigned char));
+    auto                colol = YELLOW;
+    const unsigned char col[] = {colol.r, colol.g, colol.b, colol.a};
+    for (int i = 0; i < COLOR_DATA_TOTAL; i++) {
+        chunkMeshRef.colors[i] = col[i%4];
+    }
+    // chunkMeshRef.texcoords = nullptr;
+    UploadMesh(model.meshes, false);
     model.meshes[0] = chunkMeshRef;
     boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }

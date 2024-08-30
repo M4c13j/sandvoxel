@@ -1,13 +1,12 @@
 #pragma once
-#include <vector>
-#include <bitset>
-#include <cassert>
-#include "raylib.h"
 #include "config.hpp"
+#include "raylib.h"
+#include <bitset>
 
-const int VERTEX_DATA_PER_FACE = 3 * 4; // for vertices and normals
-const int TEXTURE_DATA_PER_FACE = 2 * 4;
-const int INDICES_DATA_PER_FACE = 6;
+constexpr int VERTEX_DATA_PER_FACE  = 3 * 4; // for vertices and normals
+constexpr int TEXTURE_DATA_PER_FACE = 2 * 4;
+constexpr int INDICES_DATA_PER_FACE = 6;
+constexpr int COLOR_DATA_PER_FACE   = 4 * 4; // RGBA uchar per every Vertex
 
 // Z Y X  + -    (order of directions)
 enum Dir {
@@ -48,24 +47,30 @@ struct FacePlacementData {
 struct Cord {
     int x, y, z;
 
-    Cord(int x = 0, int y = 0, int z = 0) : x(x), y(y), z(z){};
+    Cord(const int x = 0, const int y = 0, const int z = 0) : x(x), y(y), z(z){};
 
-    Cord(Vector3 vec) {
+    Cord(const Vector3 vec) {
         x = vec.x;
         y = vec.y;
         z = vec.z;
     }
 
-    operator Vector3() const { return Vector3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}; }
+    explicit operator Vector3() const {
+        return Vector3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
+    }
     Cord operator+(const Cord &rhs) const { return {x + rhs.x, y + rhs.y, z + rhs.z}; }
     Cord operator-(const Cord &rhs) const { return {x - rhs.x, y - rhs.y, z - rhs.z}; }
-    void operator+=(const Cord &rhs) { x += rhs.x; y += rhs.y; z += rhs.z; }
-    void shift(int d) {
+    void operator+=(const Cord &rhs) {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+    }
+    void shift(const int d) {
         x -= d;
         y -= d;
         z -= d;
     }
-    void scale(int t) {
+    void scale(const int t) {
         x *= t;
         y *= t;
         z *= t;
@@ -79,7 +84,6 @@ struct Cord {
 // Block will of course be optimised in future, it has many redundant stuff, but for now it is what it is.
 class Block {
 public:
-    bool isTrans = false;
     enum Type { Air, Dirt, Plank, DirtPlank, TypeCount } type;
     uint8_t visible = 0; // indexed with index of dir ** 2.
 
