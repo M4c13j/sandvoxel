@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(RaylibImGuiExample)
+project(Sandvoxel)
 
 #========= compiler =======
 set(CMAKE_CXX_STANDARD 17)
@@ -11,12 +11,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 #set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-#========== compiler ====
-
 # set(USE_IMGUI false)
 
-set(SOURCE_DIR src)
 # Specify the paths to Dear ImGui and raylib
+set(SOURCE_DIR src)
 set(IMGUI_PATH /home/mac/gitrepos/imgui)
 set(RAYLIB_PATH /usr/local)
 
@@ -55,14 +53,20 @@ endif( DEFINED USE_IMGUI )
 add_executable(${PROJECT_NAME}
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/player.cpp
-    ${SOURCE_DIR}/block.cpp
     ${SOURCE_DIR}/chunk.cpp
     ${SOURCE_DIR}/config.hpp
     ${SOURCE_DIR}/world.cpp
     ${SOURCE_DIR}/renderer.cpp
     ${SOURCE_DIR}/config.cpp
-    # ${SOURCE_DIR}/.cpp
-    # ${SOURCE_DIR}/block.cpp
+    src/Block/block.cpp
+        src/Block/BlockFactory.cpp
+        src/Block/BlockFactory.hpp
+        src/Block/Sand.cpp
+        src/Block/Sand.hpp
+        src/Block/Dirt.cpp
+        src/Block/Dirt.hpp
+        src/Block/Air.cpp
+        src/Block/Air.hpp
 )
 
 # Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.

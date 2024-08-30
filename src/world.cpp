@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-void World::print_size_report() {
+void World::print_size_report() const {
     std::cout << "=========== SIZE report ============" << std::endl;
     std::cout << "Total chunks: " << side << "^2 * " << height << " = " << side*side*height <<"\n";
     std::cout << "World size: " << sizeof(*this) << " bytes  ~ " << sizeof(*this) / 1e6 << " mb\n";
@@ -21,12 +21,13 @@ World::World() {
     for (int x = 0; x < config::MAP_SIDE_IN_CHUNKS; x++) {
         for (int y = 0; y < config::MAP_HEIGHT_IN_CHUNKS; y++) {
             for (int z = 0; z < config::MAP_SIDE_IN_CHUNKS; z++) {
-                Chunk &curr  = chunks[x][y][z];
-                curr.cords   = {x, y, z};
-                curr.id      = -1; // TODO: remove or finish
-                curr.drawPos = Vector3Add((Vector3){(float)x * config::CHUNK_SIZE, (float)y * config::CHUNK_SIZE,
-                                                    (float)z * config::CHUNK_SIZE},
-                                          drawOffset);
+                Chunk &curr                = chunks[x][y][z];
+                curr.cords                 = {x, y, z};
+                curr.id                    = -1; // TODO: remove or finish
+                curr.drawPos               = Vector3Add((Vector3){static_cast<float>(x) * config::CHUNK_SIZE,
+                                                                  static_cast<float>(y) * config::CHUNK_SIZE,
+                                                                  static_cast<float>(z) * config::CHUNK_SIZE},
+                                                        drawOffset);
                 curr.neighbours[DIR_NORTH] = z + 1 < side ? &chunks[x][y][z + 1] : nullptr;
                 curr.neighbours[DIR_SOUTH] = z - 1 >= 0 ? &chunks[x][y][z - 1] : nullptr;
                 curr.neighbours[DIR_EAST]  = x + 1 < side ? &chunks[x + 1][y][z] : nullptr;
@@ -36,8 +37,6 @@ World::World() {
             }
         }
     }
-
-    print_size_report();
 }
 
 void World::generate_perlin_chunks(uint_fast32_t seed) {
@@ -55,7 +54,7 @@ void World::generate_perlin_chunks(uint_fast32_t seed) {
                                  * MAP_HEIGHT_BLOCKS;
                     for (int by = 0; by < MAP_HEIGHT_BLOCKS; by++) {
                         chunks[x][by / config::CHUNK_SIZE][z].setBlockType(bx, by % config::CHUNK_SIZE, bz,
-                                                                           by > glevel ? Block::Air : Block::DirtPlank);
+                                                                           by > glevel ? BlockType::Air : BlockType::Sand);
                     }
                 }
             }

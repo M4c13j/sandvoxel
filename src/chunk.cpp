@@ -3,13 +3,15 @@
 #include <algorithm>
 #include <cstdio>
 
-#include "block.hpp"
+#include "Block/BlockFactory.hpp"
 #include "chunk.hpp"
 #include "config.hpp"
 #include "perlin.hpp"
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
+
+#include <complex>
 
 Chunk::~Chunk() {
     // UnloadModel(model);
@@ -20,10 +22,9 @@ void Chunk::generate_default_blocks(int airLevel) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 if (y< airLevel)
-                    blocks[x][y][z] = Block(Block::DirtPlank);
+                    blocks[x][y][z] = &Sand::getInstance();
                 else
-                    blocks[x][y][z] = Block(Block::Air);
-
+                    blocks[x][y][z] = &Air::getInstance();
             }
         }
     }
@@ -42,9 +43,9 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
             nonEmptyBlocks += glevel;
             for (int y = 0; y < config::CHUNK_SIZE; y++) {
                 if (y < glevel) {
-                    blocks[x][y][z] = Block(Block::DirtPlank);
+                    blocks[x][y][z] = &Sand::getInstance();
                 } else {
-                    blocks[x][y][z] = Block(Block::Air);
+                    blocks[x][y][z] = &Air::getInstance();
                 }
             }
         }
@@ -85,7 +86,7 @@ bool Chunk::is_visible_face(const Cord pos, const Dir dir) {
     Cord nextPos
         = {pos.x + FACE_NORMALS_CORD[dir].x, pos.y + FACE_NORMALS_CORD[dir].y, pos.z + FACE_NORMALS_CORD[dir].z};
     if (is_in_chunk(nextPos)) {
-        return get_block(nextPos.x, nextPos.y, nextPos.z).is_transparent();
+        return get_block(nextPos.x, nextPos.y, nextPos.z)->is_transparent();
     }
 
     if (neighbours[dir] == nullptr)
@@ -100,7 +101,7 @@ bool Chunk::is_visible_face(const Cord pos, const Dir dir) {
         case DIR_WEST: nextPos.x = config::CHUNK_SIZE - 1; break;
         }
 
-    return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z).is_transparent();
+    return neighbours[dir]->get_block(nextPos.x, nextPos.y, nextPos.z)->is_transparent();
 }
 
 void Chunk::check_visible_faces() {
@@ -108,7 +109,7 @@ void Chunk::check_visible_faces() {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block &curr  = blocks[x][y][z];
+                Block &curr  = *blocks[x][y][z];
                 curr.visible = 0;
                 if (curr.is_transparent())
                     continue; // do not draw Air
@@ -133,36 +134,38 @@ void Chunk::generate_mesh() {
     check_visible_faces(); // find all visible faces if there are any
 
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
-    const int VERTEX_DATA_TOTAL = VERTEX_DATA_PER_FACE * visibleFaces;
+    const int VERTEX_DATA_TOTAL  = VERTEX_DATA_PER_FACE * visibleFaces;
     const int TEXTURE_DATA_TOTAL = TEXTURE_DATA_PER_FACE * visibleFaces;
     const int INDICES_DATA_TOTAL = INDICES_DATA_PER_FACE * visibleFaces;
-    const int COLOR_DATA_TOTAL = COLOR_DATA_PER_FACE * visibleFaces;
+    const int COLOR_DATA_TOTAL   = COLOR_DATA_PER_FACE * visibleFaces;
 
     if (visibleFaces == 0)
         return; // do not allocate memory or other things if there ar no face visible.
 
-    auto *vertices = static_cast<float *>(RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float)));
+    auto *vertices  = static_cast<float *>(RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float)));
     auto *texcoords = static_cast<float *>(RL_MALLOC(TEXTURE_DATA_TOTAL * sizeof(float)));
-    auto *normals = static_cast<float *>(RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float)));
-    auto *indices = static_cast<unsigned short *>(RL_MALLOC(INDICES_DATA_TOTAL * sizeof(unsigned short)));
+    auto *normals   = static_cast<float *>(RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float)));
+    auto *indices   = static_cast<unsigned short *>(RL_MALLOC(INDICES_DATA_TOTAL * sizeof(unsigned short)));
+    auto *colors    = static_cast<unsigned char *>(RL_MALLOC(COLOR_DATA_TOTAL * sizeof(unsigned char)));
 
-    FacePlacementData placementData = {vertices, texcoords, normals, indices, 0};
+    FacePlacementData placementData = {0, vertices, texcoords, normals, indices, colors};
     int vertexCount = 0;
     int indexCount = 0;
-
+    int usedFaces = 0;
     // wish I could foreach or have flexibility from java to use queue as array.
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block *curr = &blocks[x][y][z];
+                Block &curr = *blocks[x][y][z];
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
-                    if (curr->visible & (1<<dir)) {
-                        Vector3 currBlockPos = Vector3Add(
+                    if (curr.visible & (1<<dir)) {
+                        Vector3 blockActualPos = Vector3Add(
                             drawPos, {static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)});
-                        curr->generate_face(placementData, static_cast<Dir>(dir), currBlockPos);
+                        curr.generate_face(placementData, static_cast<Dir>(dir), blockActualPos);
                         placementData.advance_face();
                         vertexCount += 4;
                         indexCount += 2;
+                        usedFaces++;
                     }
                 }
             }
@@ -180,16 +183,7 @@ void Chunk::generate_mesh() {
     chunkMeshRef.triangleCount = indexCount; // change it
     chunkMeshRef.vertexCount = vertexCount;
 
-    free(chunkMeshRef.colors);
-    chunkMeshRef.colors = (unsigned char*) RL_MALLOC(COLOR_DATA_TOTAL * sizeof(unsigned char));
-    auto                colol = YELLOW;
-    const unsigned char col[] = {colol.r, colol.g, colol.b, colol.a};
-    for (int i = 0; i < COLOR_DATA_TOTAL; i++) {
-        chunkMeshRef.colors[i] = col[i%4];
-    }
-    // chunkMeshRef.texcoords = nullptr;
     UploadMesh(model.meshes, false);
-    model.meshes[0] = chunkMeshRef;
     boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }
 

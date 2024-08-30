@@ -1,6 +1,6 @@
 #pragma once
 
-#include "block.hpp"
+#include "Block/BlockFactory.hpp"
 #include "config.hpp"
 #include "raylib.h"
 
@@ -29,7 +29,7 @@ public:
     BoundingBox boundingBox           = {};
     Chunk      *neighbours[DIR_COUNT] = {nullptr};
     Model       model                 = {};
-    Block       blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
+    Block *blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
 
     Chunk() : blocks{} {
         model = LoadModelFromMesh({});
@@ -39,13 +39,13 @@ public:
         model = LoadModelFromMesh({});
         model.meshes = new Mesh();
     }
-    ~      Chunk();
-    Block &get_block(int x, int y, int z) { return blocks[x][y][z]; }
-    void   setBlockType(int x, int y, int z, Block::Type newType) {
-        Block &curr = blocks[x][y][z];
-        nonEmptyBlocks -= (newType == Block::Air && curr.type != Block::Air); // Solid to air then -1
-        nonEmptyBlocks += (curr.type == Block::Air && newType != Block::Air); // Air to solid block then +1
-        curr.setType(newType);
+    ~         Chunk();
+    Block *get_block(int x, int y, int z) const { return blocks[x][y][z]; }
+    void   setBlockType(int x, int y, int z, BlockType newType) {
+        Block &curr = *blocks[x][y][z];
+        nonEmptyBlocks -= (newType == BlockType::Air && curr.type != BlockType::Air); // Solid to air then -1
+        nonEmptyBlocks += (curr.type == BlockType::Air && newType != BlockType::Air); // Air to solid block then +1
+        curr = *BlockFactory::getInstance(newType);
     }
     [[nodiscard]] bool isEmpty() const { return nonEmptyBlocks == 0; }
     [[nodiscard]] bool isVisible() const { return !isEmpty() && visibleFaces != 0; }

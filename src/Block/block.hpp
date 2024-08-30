@@ -1,5 +1,4 @@
 #pragma once
-#include "config.hpp"
 #include "raylib.h"
 #include <bitset>
 
@@ -29,17 +28,19 @@ const Vector3 FACE_NORMALS[] = {
 };
 
 struct FacePlacementData {
-    float *vertices;
-    float *texcoords;
-    float *normals;
+    unsigned short  indicesOffset;
+    float          *vertices;
+    float          *texcoords;
+    float          *normals;
     unsigned short *indices;
-    unsigned short indicesOffset;
+    unsigned char  *colors;
 
     void advance_face() {
         vertices += VERTEX_DATA_PER_FACE;
         texcoords += TEXTURE_DATA_PER_FACE;
         normals += VERTEX_DATA_PER_FACE;
         indices += INDICES_DATA_PER_FACE;
+        colors += COLOR_DATA_PER_FACE;
         indicesOffset += 4; // 4 vertices used for drawing
     }
 };
@@ -80,26 +81,26 @@ struct Cord {
     }
 };
 
+
+//============================== BLOCK FACTORY =================================================
+// Factory produces blocks. Blocks have texture cordinates and vertex colors assigned to them.
+// Enum specifes available block types.
+
+enum class BlockType { Air = 0, Dirt, Plank, Sand, DirtPlank, TypeCount };
+
 // Alignment changed size of Block from 40B to 24B, just reordering shit around. Why compilers dont do it?
 // Block will of course be optimised in future, it has many redundant stuff, but for now it is what it is.
+// Blocks shall inherit from class Block and be Singletons.
 class Block {
 public:
-    enum Type { Air, Dirt, Plank, DirtPlank, TypeCount } type;
-    uint8_t visible = 0; // indexed with index of dir ** 2.
+    uint8_t       visible = 0; // indexed with index of dir ** 2.
+    bool          isTransparent;
+    BlockType     type;
+    static u_char colors[COLOR_DATA_PER_FACE * 6];
+    static float  texcoords[TEXTURE_DATA_PER_FACE * 6]; // texture data for every face (indexed by normal from given Dir
 
-             Block() = default;
-    explicit Block(Type type) : type(type){};
-    // Block(Type type) : type(type) {};
-    ~                  Block() = default;
-    void               setType(const Type newType) { type = newType; }
-    [[nodiscard]] bool is_transparent() const { return type == Air; }
-    void               generate_face(FacePlacementData &dest, Dir dir, Cord pos);
-    void               draw_face(Cord pos, Dir dir);
+                        Block() = default;
+    [[nodiscard]] bool  is_transparent() const { return isTransparent; }
+    void                generate_face(FacePlacementData &dest, Dir dir, Cord pos);
+    [[deprecated]] void draw_face(Cord pos, Dir dir); // used for debuging, long time ago
 };
-
-inline Dir inverse_dir(Dir dir) {
-    // auto val = [](int x) {return !(x%2) + x - x%2;};
-    // for (int i = 0; i < 3; i++)
-    //     assert(val(2*i) == 2*i+1 && val(2*i+1) == 2*i);
-    return static_cast<Dir>(!(dir % 2) + dir - dir % 2);
-}

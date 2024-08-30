@@ -16,15 +16,15 @@ public:
     // IMPORTANT: if World is stored in stack and it has more than ~60 chunks, it may fill whole stack (on my WSL 2
     // debian it is 8kb and it is standard). You have to allocate World on heap otherwise code may have segfault at the
     // begging of main :(.
-    Chunk chunks[config::MAP_SIDE_IN_CHUNKS][config::MAP_HEIGHT_IN_CHUNKS][config::MAP_SIDE_IN_CHUNKS];
     static constexpr size_t side   = config::MAP_SIDE_IN_CHUNKS; // for now, strict size
     static constexpr size_t height = config::MAP_HEIGHT_IN_CHUNKS;
     Vector3                 drawOffset; // offset so that mesh is drawn correctly
+    Chunk chunks[config::MAP_SIDE_IN_CHUNKS][config::MAP_HEIGHT_IN_CHUNKS][config::MAP_SIDE_IN_CHUNKS];
 
          World();
     void generate_perlin_chunks(uint_fast32_t seed);
     // returns block from given cordinates
-    Block &get_block(Cord cord) {
+    Block *get_block(Cord cord) {
         return get_chunk(cord).get_block(cord.x % config::BLOCK_SIZE, cord.y % config::BLOCK_SIZE,
                                          cord.z % config::BLOCK_SIZE);
     }
@@ -46,12 +46,12 @@ public:
     Chunk &get_chunk_raw_access(Cord arrayCord) { return chunks[arrayCord.x][arrayCord.y][arrayCord.z]; }
     // using array indexes
     Chunk &get_chunk(int x, int y, int z) { return get_chunk_raw_access(chunk_cord_from_position(x, y, z)); }
-    Chunk &get_chunk(Cord cord) { return get_chunk_raw_access(chunk_cord_from_position(cord)); }
-    void   setBlock(int x, int y, int z, Block::Type newType) { get_chunk(x,y,z).setBlockType(x%config::CHUNK_SIZE, y%config::CHUNK_SIZE, z%config::CHUNK_SIZE, newType); }
+    Chunk &get_chunk(Cord cord) { return get_chunk_raw_access(chunk_cord_from_position(Vector3(cord))); }
+    void   setBlock(int x, int y, int z, const BlockType newType) { get_chunk(x,y,z).setBlockType(x%config::CHUNK_SIZE, y%config::CHUNK_SIZE, z%config::CHUNK_SIZE, newType); }
     void   mesh_all_chunks();
     void   mesh_chunk(Cord pos);
     void   draw_all(Texture &atlas, bool drawBoundingBox);
-    void   print_size_report();
+    void   print_size_report() const;
 };
 
 #define GENERATE_2D_VECTOR(_TYPE, _ROWS, _COLUMNS, _DEFAULT)                                                           \

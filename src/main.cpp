@@ -1,3 +1,5 @@
+#include "Block/Air.hpp"
+#include "Block/Sand.hpp"
 #include "benchmark.hpp"
 #include "chunk.hpp"
 #include "config.hpp"
@@ -5,6 +7,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "world.hpp"
+
 #include <cassert>
 #include <cstdio>
 #include <map>
@@ -26,14 +29,12 @@ int main(int argc, char** argv)
 
     Texture dirt_plank = LoadTexture("../resources/textures/dirt_plank.png");
     Player player = Player();
-
     Chunk chunk = Chunk({0, -config::CHUNK_SIZE/2,0}, 0);
     // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_perlin(2137u);
     chunk.generate_mesh();
 
     World *world = new World(); // stack overfow for bigger worlds if allocated on stack;
-
     Benchmark bench("Chunk mesh ", 1);
     Benchmark single("Single chunk mesh, with neighbours", 1);
     bench.start();
@@ -46,7 +47,15 @@ int main(int argc, char** argv)
             world->get_chunk_raw_access({13, 2, 1}).generate_mesh();
         }
     single.stop(single_iters);
-    // return 0;
+
+    Sand sandInst = Sand::getInstance();
+    assert(sandInst.colors[0] == YELLOW.r && sandInst.colors[1] == YELLOW.g && sandInst.colors[2] == YELLOW.b
+                  && sandInst.colors[3] == YELLOW.a);
+    assert(sandInst.isTransparent == true);
+    Air airInst = Air::getInstance();
+    assert(airInst.colors[0] == 0 && airInst.colors[1] == 0 && airInst.colors[2] == 0
+                  && airInst.colors[3] == 0);
+    assert(airInst.isTransparent == true);
 
     //==================================== RLGL (opengl abstr) changes ============================================
     rlSetLineWidth(2.0f); // lines are finally more visible and not as annoying
@@ -112,7 +121,7 @@ int main(int argc, char** argv)
     CloseWindow();
     bench.results();
     single.results();
-    // world->print_size_report();
+    world->print_size_report();
     delete world;
     // UnloadTexture(planktxt);
     // UnloadModel(model);
