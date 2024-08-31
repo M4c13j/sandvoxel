@@ -13,6 +13,16 @@
 
 #include <complex>
 
+void Chunk::init_blocks() {
+    for (int i = 0; i < config::CHUNK_SIZE; i++) {
+        for (int j = 0; j < config::CHUNK_SIZE; j++) {
+            for (int k = 0; k < config::CHUNK_SIZE; k++) {
+                blocks[i][j][k] = new Air;
+            }
+        }
+    }
+}
+
 Chunk::~Chunk() {
     // UnloadModel(model);
 }
@@ -133,6 +143,8 @@ void Chunk::generate_mesh() {
         return; // why bother?
 
     check_visible_faces(); // find all visible faces if there are any
+    if (visibleFaces == 0)
+        return; // do not allocate memory or other things if there ar no face visible.
 
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     const int VERTEX_DATA_TOTAL  = VERTEX_DATA_PER_FACE * visibleFaces;
@@ -140,8 +152,6 @@ void Chunk::generate_mesh() {
     const int INDICES_DATA_TOTAL = INDICES_DATA_PER_FACE * visibleFaces;
     const int COLOR_DATA_TOTAL   = COLOR_DATA_PER_FACE * visibleFaces;
 
-    if (visibleFaces == 0)
-        return; // do not allocate memory or other things if there ar no face visible.
 
     auto *vertices  = static_cast<float *>(RL_MALLOC(VERTEX_DATA_TOTAL * sizeof(float)));
     auto *texcoords = static_cast<float *>(RL_MALLOC(TEXTURE_DATA_TOTAL * sizeof(float)));
@@ -158,10 +168,13 @@ void Chunk::generate_mesh() {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 Block *curr = get_block(x, y, z);
+                if (curr->getType() == BlockType::Fluid) {
+                    puts("FLUID\n");
+                }
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
-                    if (curr->visible & (1<<dir)) {
-                        Vector3 blockActualPos = Vector3Add(
-                            drawPos, {static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)});
+                    if (curr->visible & (1 << dir)) {
+                        Vector3 blockActualPos{drawPos.x + static_cast<float>(x), drawPos.y + static_cast<float>(y),
+                                               drawPos.z + static_cast<float>(z)};
                         curr->generate_face(placementData, static_cast<Dir>(dir), blockActualPos);
                         placementData.advance_face();
                         vertexCount += 4;
@@ -174,7 +187,7 @@ void Chunk::generate_mesh() {
     }
 
     UnloadMesh(model.meshes[0]);
-    model.meshes = new Mesh();
+    model.meshes[0] = Mesh{};
     Mesh &chunkMeshRef = model.meshes[0];
 
     chunkMeshRef.vertices = vertices;
@@ -186,7 +199,7 @@ void Chunk::generate_mesh() {
     chunkMeshRef.vertexCount = vertexCount;
 
     UploadMesh(model.meshes, false);
-    boundingBox = GetMeshBoundingBox(chunkMeshRef);
+    // boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }
 
 void Chunk::gen_mesh_block(float *vertPt, float *texPt, float *normalPt,

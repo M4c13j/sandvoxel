@@ -59,6 +59,8 @@ int main(int argc, char** argv)
                   && airInst.getColors()[3] == 0);
     assert(airInst.isTransparent() == true);
 
+    world->addFluid(-4, 5, 9);
+
     //==================================== RLGL (opengl abstr) changes ============================================
     rlSetLineWidth(2.0f); // lines are finally more visible and not as annoying
     // rlEnableWireMode(); // Draw wires only!
@@ -66,10 +68,14 @@ int main(int argc, char** argv)
     // Main loop ==============================
     while (!WindowShouldClose()) {
         UpdateCamera(&player.camera, CAMERA_FREE);
-        // Rendering
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
 
+        world->update();
+        // Rendering
+        // Wire debugger
+        if (IsKeyDown(KEY_R))
+            rlEnableWireMode();
+        else
+            rlDisableWireMode();
         // for (int i=0;i<5;i++) chunk.generate_mesh();
 
         Ray ray;//player.camera.position, player.camera.target);
@@ -82,39 +88,31 @@ int main(int argc, char** argv)
         //     // world->get_chunk_raw_access({10, 5, 10}).generate_mesh();
         //     world->get_chunk_raw_access({world->side/2, world->height/2, world->side/2}).generate_mesh();
         // }
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
 
-        // Wire debugger
-        if (IsKeyDown(KEY_R))
-            rlEnableWireMode();
-        else
-            rlDisableWireMode();
+            BeginMode3D(player.camera);
+                DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);
+                DrawCubeV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, PURPLE);
+                DrawCubeWiresV((Vector3){ 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, DARKGREEN);
+                DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 3.0f, 1.0f }, YELLOW);
+                DrawGrid(100, 1.0f);
 
-        BeginMode3D(player.camera);
-            DrawCubeWiresV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, RED);
-            DrawCubeV((Vector3){ 0.0f, 0.5f, 1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, PURPLE);
-            DrawCubeWiresV((Vector3){ 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 1.0f, 1.0f }, DARKGREEN);
-            DrawCubeV((Vector3) { 0.0f, 0.5f, -1.0f }, (Vector3){ 1.0f, 3.0f, 1.0f }, YELLOW);
-            DrawGrid(100, 1.0f);
+                world->draw_all(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
+                chunk.draw_chunk(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
+                // world->chunks[config::MAP_SIDE_IN_CHUNKS/2][config::MAP_HEIGHT_IN_CHUNKS/2][config::MAP_SIDE_IN_CHUNKS/2].draw_chunk(dirt_plank, true);
+                // world->chunks[6][4][13].draw_chunk(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
 
-            world->draw_all(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
-            chunk.draw_chunk(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
-            // world->chunks[config::MAP_SIDE_IN_CHUNKS/2][config::MAP_HEIGHT_IN_CHUNKS/2][config::MAP_SIDE_IN_CHUNKS/2].draw_chunk(dirt_plank, true);
-            world->chunks[6][4][13].draw_chunk(dirt_plank, DRAW_CHUNK_DEBUG_WIRES_MODEL);
+                // DrawBoundingBox(GetMeshBoundingBox(chunk.chunkMesh), BLACK);
+            EndMode3D();
 
-            // DrawBoundingBox(GetMeshBoundingBox(chunk.chunkMesh), BLACK);
-         EndMode3D();
+             // debug stays
+             DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
+             DrawText(TextFormat("Fps: %d  |  Frame time: %.2fms", GetFPS(), GetFrameTime()*1000), 10, 30, 20, DARKGRAY);
+             DrawText(TextFormat("  Chunk: %s", world->chunk_cord_from_position(player.camera.position).toString().c_str()), 10, 50, 20, DARKGRAY);
+             DrawText(TextFormat("Camera Position: [%.2f, %.2f, %.2f]", player.camera.position.x, player.camera.position.y, player.camera.position.z), 10, 70, 20, DARKGRAY);
+             DrawText(TextFormat("  Camera target: [%.2f, %.2f, %.2f]", player.camera.target.x, player.camera.target.y, player.camera.target.z), 10, 90, 20, DARKGRAY);
 
-         // debug stays
-         DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
-         DrawText(TextFormat("Fps: %d  |  Frame time: %.2fms", GetFPS(), GetFrameTime()*1000), 10, 30, 20, DARKGRAY);
-         DrawText(TextFormat("  Chunk: %s", world->chunk_cord_from_position(player.camera.position).toString().c_str()), 10, 50, 20, DARKGRAY);
-         DrawText(TextFormat("Camera Position: [%.2f, %.2f, %.2f]", player.camera.position.x, player.camera.position.y, player.camera.position.z), 10, 70, 20, DARKGRAY);
-         DrawText(TextFormat("  Camera target: [%.2f, %.2f, %.2f]", player.camera.target.x, player.camera.target.y, player.camera.target.z), 10, 90, 20, DARKGRAY);
-
-         // DrawText(TextFormat("Mesh Count: %d", model.meshCount), 10, 90, 20, DARKGRAY);
-         // DrawText(TextFormat("Material Count: %d", model.materialCount), 10, 110, 20, DARKGRAY);
-
-         // Rendering
          EndDrawing();
     }
 

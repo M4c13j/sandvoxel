@@ -4,6 +4,8 @@
 #include "config.hpp"
 #include "raylib.h"
 
+#include <vector>
+
 // Whether mesh should be drawn with texture or nah
 enum MeshType { MESH_TEXTURED = 0, MESH_COLORED };
 
@@ -36,15 +38,8 @@ public:
 
 private:
     Block *blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
-    void init_blocks() {
-        for (int i = 0; i < config::CHUNK_SIZE; i++) {
-            for (int j = 0; j < config::CHUNK_SIZE; j++) {
-                for (int k = 0; k < config::CHUNK_SIZE; k++) {
-                    blocks[i][j][k] = new Air;
-                }
-            }
-        }
-    }
+    std::vector<Fluid> fluids;
+    void init_blocks();
 
 public:
     Chunk() : Chunk({0, 0, 0}, 0) {}

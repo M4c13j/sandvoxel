@@ -1,12 +1,9 @@
 #pragma once
 #include "block.hpp"
 
-#include <algorithm>
-
 class Sand : public Block {
 public:
          Sand()          = default;
-    // ~    Sand() override = default;
     void init() override {
         Color col = YELLOW;
         for (int i = 0; i < COLOR_DATA_PER_FACE * 6; i += 4) {

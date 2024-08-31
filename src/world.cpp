@@ -4,6 +4,7 @@
 #include "raymath.h"
 
 #include <iostream>
+#include <set>
 
 void World::print_size_report() const {
     std::cout << "=========== SIZE report ============" << std::endl;
@@ -13,7 +14,7 @@ void World::print_size_report() const {
     // std::cout << "Block size: " << sizeof(chunks[0][0][0].]) << " bytes \n";
 }
 
-World::World() {
+World::World() : fluidSim(*this) {
     float heightOffset = (-1) * config::MAP_HEIGHT_IN_BLOCKS / 2;
     float normalOffset = (-1) * (float)config::CHUNK_SIZE * side / 2;
     drawOffset         = {normalOffset, heightOffset, normalOffset};
@@ -55,8 +56,8 @@ void World::generate_perlin_chunks(uint_fast32_t seed) {
                                                    (bz + z * config::CHUNK_SIZE) * PRECISION_FOR_PERLIN)
                                  * MAP_HEIGHT_BLOCKS;
                     for (int by = 0; by < MAP_HEIGHT_BLOCKS; by++) {
-                        chunks[x][by / config::CHUNK_SIZE][z].setBlockType(bx, by % config::CHUNK_SIZE, bz,
-                                                                           by > glevel ? BlockType::Air : BlockType::Sand);
+                        chunks[x][by / config::CHUNK_SIZE][z].setBlockType(
+                            bx, by % config::CHUNK_SIZE, bz, by > glevel ? BlockType::Air : BlockType::Sand);
                     }
                 }
             }
@@ -85,6 +86,24 @@ void World::draw_all(Texture &atlas, DrawChunkFlags flags) {
 
 }
 
+void World::addFluid(int x, int y, int z) {
+    if (get_block({x,y,z})->getType() == BlockType::Fluid) { // TODO: Use isFluid instead
+        return;
+    }
+    fluidSim.addFluid(x, y, z);
+    chunksToMesh.push_back(chunk_cord_from_position(x,y,z));
+}
 
-void World::mesh_chunk(Cord pos) {
+void World::update() {
+    std::set<Chunk *> redrawnChunks; // cause I dont want to hash Cord...
+    fluidSim.update(chunksToMesh);
+
+    while (!chunksToMesh.empty()) {
+        auto akt = chunksToMesh.front(); chunksToMesh.pop_front();
+        auto curr = get_chunk_raw_access(akt);
+        if (redrawnChunks.count(&curr) == 0) {
+            curr.generate_mesh();
+            redrawnChunks.insert(&curr);
+        }
+    }
 }

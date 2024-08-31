@@ -8,9 +8,10 @@ set(CMAKE_CXX_COMPILER /usr/bin/g++)
 #set(CMAKE_BUILD_TYPE Debug)
 # set(CMAKE_BUILD_TYPE Release) <- comment out such lines
 # set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address -fsanitize=undefined")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g") # just d
+#set(CMAKE_CXX_FLAGS_DEBUG "-g -pg") # profiling
+#set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address -fsanitize=undefined") # memory debugging
+set(CMAKE_CXX_FLAGS_RELEASE "-O3") # speeeeed
 
 # set(USE_IMGUI false)
 
@@ -68,7 +69,11 @@ add_executable(${PROJECT_NAME}
         src/Block/Dirt.cpp
 #        src/Block/Dirt.hpp
         src/Block/Air.cpp
-#        src/Block/Air.hpp
+        src/Block/Fluid.cpp
+        src/Block/Fluid.hpp
+        src/FluidSimulation/FluidSimulation.cpp
+        src/FluidSimulation/FluidSimulation.hpp
+        #        src/Block/Air.hpp
 )
 
 # Link libraries, lista bibliotek linkowanych, zdefiniowanych tu lub globalnie.

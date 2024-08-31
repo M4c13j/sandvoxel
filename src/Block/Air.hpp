@@ -4,7 +4,6 @@
 class Air : public Block {
 public:
               Air()          = default;
-    // ~         Air() override = default;
     void      init() override {}
     bool      isTransparent() override { return trans; }
     BlockType getType() override { return type; }
