@@ -8,8 +8,8 @@ set(CMAKE_CXX_COMPILER /usr/bin/g++)
 #set(CMAKE_BUILD_TYPE Debug)
 # set(CMAKE_BUILD_TYPE Release) <- comment out such lines
 # set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address")
+#set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address -fsanitize=undefined")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # set(USE_IMGUI false)

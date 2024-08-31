@@ -18,6 +18,7 @@ enum DrawChunkFlags {
     = DRAW_BLOCK_WIRES | DRAW_CHUNK_BOUNDING_BOX | DRAW_CHUNK_DRAWN_BOUNDING_BOX
 };
 
+
 // Whether nonEmptyBlocks and visibleFaces make any sense BLOCKS in chunk TIMES faces
 static_assert(config::BLOCKS_IN_CHUNK * 6 <= UINT16_MAX, "Total number of visible faces may not fit in uint16.");
 class Chunk {
@@ -31,22 +32,29 @@ public:
     BoundingBox boundingBox           = {};
     Chunk      *neighbours[DIR_COUNT] = {nullptr};
     Model       model                 = {};
+private:
     Block *blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
+    Air*blocksStorage;
 
+public:
     void init_blocks() {
+        // Tricky ahh. Trying to have continous memory for blocks anyway.
+        blocksStorage = new Air[config::CHUNK_SIZE * config::CHUNK_SIZE * config::CHUNK_SIZE];
+        assert(blocksStorage[0].getType() == BlockType::Air);
+
         for (int i = 0; i < config::CHUNK_SIZE; i++) {
             for (int j = 0; j < config::CHUNK_SIZE; j++) {
                 for (int k = 0; k < config::CHUNK_SIZE; k++) {
-                    blocks[i][j][k] = new Air();
+                    const int addr = i * config::CHUNK_SIZE * config::CHUNK_SIZE + j * config::CHUNK_SIZE + k;
+                    blocks[i][j][k] = reinterpret_cast<Block*>(&blocksStorage[addr]);
+                    // auto dawg = blocks[i][j][k]->getType();
+                    auto dawg = (blocksStorage + addr)->getType();
+                    assert(dawg == BlockType::Air);
                 }
             }
         }
     }
-    Chunk() {
-        model        = LoadModelFromMesh({});
-        model.meshes = new Mesh();
-        init_blocks();
-    }
+    Chunk() : Chunk({0,0,0}, 0) {}
     Chunk(Cord cords, int id) : id(id), cords(cords)  {
         model = LoadModelFromMesh({});
         model.meshes = new Mesh();
@@ -58,7 +66,8 @@ public:
         Block *curr = blocks[x][y][z];
         nonEmptyBlocks -= (newType == BlockType::Air && curr->getType()!= BlockType::Air); // Solid to air then -1
         nonEmptyBlocks += (curr->getType() == BlockType::Air && newType != BlockType::Air); // Air to solid block then +1
-        blocks[x][y][z] = BlockFactory::getInstance().getObjectFromType(newType);
+        // blocks[x][y][z] = BlockFactory::getInstance().getObjectFromType(newType);
+        *blocks[x][y][z] = *BlockFactory::getInstance().getObjectFromType(newType);
     }
     [[nodiscard]] bool isEmpty() const { return nonEmptyBlocks == 0; }
     [[nodiscard]] bool isVisible() const { return !isEmpty() && visibleFaces != 0; }

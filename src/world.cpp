@@ -10,7 +10,7 @@ void World::print_size_report() const {
     std::cout << "Total chunks: " << side << "^2 * " << height << " = " << side*side*height <<"\n";
     std::cout << "World size: " << sizeof(*this) << " bytes  ~ " << sizeof(*this) / 1e6 << " mb\n";
     std::cout << "Chunk size: " << sizeof(chunks[0][0][0]) << " bytes \n";
-    std::cout << "Block size: " << sizeof(chunks[0][0][0].blocks[0][0][0]) << " bytes \n";
+    // std::cout << "Block size: " << sizeof(chunks[0][0][0].]) << " bytes \n";
 }
 
 World::World() {

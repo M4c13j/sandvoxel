@@ -22,9 +22,10 @@ void Chunk::generate_default_blocks(int airLevel) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 if (y< airLevel)
-                    blocks[x][y][z] = new Sand();
+                    // blocks[x][y][z] = new Sand();
+                        setBlockType(x,y,z, BlockType::Sand);
                 else
-                    blocks[x][y][z] = new Air();
+                    setBlockType(x,y,z, BlockType::Air);
             }
         }
     }
@@ -43,9 +44,9 @@ void Chunk::generate_perlin(uint_fast32_t seed) {
             nonEmptyBlocks += glevel;
             for (int y = 0; y < config::CHUNK_SIZE; y++) {
                 if (y < glevel) {
-                    blocks[x][y][z] = new Sand();
+                    setBlockType(x,y,z, BlockType::Sand);
                 } else {
-                    blocks[x][y][z] = new Air();
+                    setBlockType(x,y,z, BlockType::Air);
                 }
             }
         }

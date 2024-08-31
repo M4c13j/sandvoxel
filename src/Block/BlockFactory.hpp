@@ -5,6 +5,7 @@
 #include "Sand.hpp"
 
 #include <cassert>
+#include <variant>
 
 class BlockFactory {
 public:
@@ -24,9 +25,14 @@ public:
         Air().init();
         Sand().init();
         classesInitialised = true;
+
+        // if sizes dont match, create variable of maximal size
+        assert(sizeof(Air) == sizeof(Sand));
     }
 
 private:
     bool classesInitialised = false;
 
 };
+
+std::variant<Air, Sand> allBlocks;

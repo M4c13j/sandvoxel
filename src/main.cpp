@@ -29,6 +29,8 @@ int main(int argc, char** argv)
 
     Texture dirt_plank = LoadTexture("../resources/textures/dirt_plank.png");
     Player player = Player();
+
+    BlockFactory::getInstance().initBlocks();
     Chunk chunk = Chunk({0, -config::CHUNK_SIZE/2,0}, 0);
     // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_perlin(2137u);
