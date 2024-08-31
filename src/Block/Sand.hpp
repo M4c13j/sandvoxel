@@ -8,10 +8,6 @@ public:
          Sand()          = default;
     // ~    Sand() override = default;
     void init() override {
-        // type          = BlockType::Air;
-        // trans= false;
-        //
-        // std::fill(std::begin(texcoords), std::end(texcoords), 0.0f);
         Color col = YELLOW;
         for (int i = 0; i < COLOR_DATA_PER_FACE * 6; i += 4) {
             colors[i]     = col.r;

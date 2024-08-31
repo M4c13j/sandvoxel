@@ -157,7 +157,7 @@ void Chunk::generate_mesh() {
     for (int x = 0; x < config::CHUNK_SIZE; x++) {
         for (int y = 0; y < config::CHUNK_SIZE; y++) {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
-                Block *curr = blocks[x][y][z];
+                Block *curr = get_block(x, y, z);
                 for (int dir = 0; dir < DIR_COUNT; dir++) {
                     if (curr->visible & (1<<dir)) {
                         Vector3 blockActualPos = Vector3Add(
@@ -181,6 +181,7 @@ void Chunk::generate_mesh() {
     chunkMeshRef.texcoords = texcoords;
     chunkMeshRef.normals = normals;
     chunkMeshRef.indices = indices;
+    chunkMeshRef.colors = colors;
     chunkMeshRef.triangleCount = indexCount; // change it
     chunkMeshRef.vertexCount = vertexCount;
 

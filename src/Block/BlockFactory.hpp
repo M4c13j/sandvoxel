@@ -5,7 +5,6 @@
 #include "Sand.hpp"
 
 #include <cassert>
-#include <variant>
 
 class BlockFactory {
 public:
@@ -14,7 +13,7 @@ public:
         return fact;
     }
 
-    Block *getObjectFromType(BlockType type) {
+    Block *getObjectFromType(BlockType type) const {
         assert(classesInitialised); // "Classes have not been initialised!"
         if (type == BlockType::Air) return new Air();
         if (type == BlockType::Sand) return new Sand();
@@ -34,5 +33,3 @@ private:
     bool classesInitialised = false;
 
 };
-
-std::variant<Air, Sand> allBlocks;
