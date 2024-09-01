@@ -120,3 +120,4 @@ protected:
     Block() = default;
 };
 
+inline Cord addNormalDir(Cord cord, Dir dir) { return cord + FACE_NORMALS[dir]; }

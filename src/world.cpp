@@ -8,7 +8,7 @@
 
 void World::print_size_report() const {
     std::cout << "=========== SIZE report ============" << std::endl;
-    std::cout << "Total chunks: " << side << "^2 * " << height << " = " << side*side*height <<"\n";
+    std::cout << "Total chunks: " << side << "^2 * " << height << " = " << side * side * height << "\n";
     std::cout << "World size: " << sizeof(*this) << " bytes  ~ " << sizeof(*this) / 1e6 << " mb\n";
     std::cout << "Chunk size: " << sizeof(chunks[0][0][0]) << " bytes \n";
     // std::cout << "Block size: " << sizeof(chunks[0][0][0].]) << " bytes \n";
@@ -65,6 +65,20 @@ void World::generate_perlin_chunks(uint_fast32_t seed) {
     }
 }
 
+std::array<Block *, DIR_COUNT> World::get_all_neighbours(int x, int y, int z) {
+    std::array<Block*, DIR_COUNT> ret;
+    for (int dir = 0; dir < DIR_COUNT; dir++) {
+        Cord neighCords = {x, y, z};
+        neighCords += FACE_NORMALS[dir];
+
+        ret[dir] = nullptr;
+        if (isInWorld(neighCords.x, neighCords.y, neighCords.z)) {
+            ret[dir] = get_block(neighCords.x, neighCords.y, neighCords.z);
+        }
+    }
+    return ret;
+}
+
 void World::mesh_all_chunks() {
     for (auto &plane: chunks) {
         for (auto &row : plane) {
@@ -87,7 +101,7 @@ void World::draw_all(Texture &atlas, DrawChunkFlags flags) {
 }
 
 void World::addFluid(int x, int y, int z) {
-    if (get_block({x,y,z})->getType() == BlockType::Fluid) { // TODO: Use isFluid instead
+    if (get_block(x,y,z)->getType() == BlockType::Fluid) { // TODO: Use isFluid instead
         return;
     }
     fluidSim.addFluid(x, y, z);
@@ -97,13 +111,13 @@ void World::addFluid(int x, int y, int z) {
 void World::update() {
     std::set<Chunk *> redrawnChunks; // cause I dont want to hash Cord...
     fluidSim.update(chunksToMesh);
-
-    while (!chunksToMesh.empty()) {
-        auto akt = chunksToMesh.front(); chunksToMesh.pop_front();
-        auto curr = get_chunk_raw_access(akt);
-        if (redrawnChunks.count(&curr) == 0) {
-            curr.generate_mesh();
-            redrawnChunks.insert(&curr);
-        }
-    }
+    mesh_all_chunks();
+    // while (!chunksToMesh.empty()) {
+    //     auto akt = chunksToMesh.front(); chunksToMesh.pop_front();
+    //     auto curr = get_chunk_raw_access(akt);
+    //     if (redrawnChunks.count(&curr) == 0) {
+    //         curr.generate_mesh();
+    //         redrawnChunks.insert(&curr);
+    //     }
+    // }
 }

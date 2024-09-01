@@ -59,7 +59,7 @@ int main(int argc, char** argv)
                   && airInst.getColors()[3] == 0);
     assert(airInst.isTransparent() == true);
 
-    world->addFluid(-4, 5, 9);
+    world->addFluid(-4, 0, 9);
 
     //==================================== RLGL (opengl abstr) changes ============================================
     rlSetLineWidth(2.0f); // lines are finally more visible and not as annoying
@@ -76,6 +76,7 @@ int main(int argc, char** argv)
             rlEnableWireMode();
         else
             rlDisableWireMode();
+
         // for (int i=0;i<5;i++) chunk.generate_mesh();
 
         Ray ray;//player.camera.position, player.camera.target);

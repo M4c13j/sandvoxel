@@ -50,8 +50,12 @@ public:
     }
     ~      Chunk();
     Block *get_block(int x, int y, int z) { return blocks[x][y][z]; }
+    // Does nothing if newType is the same as current type of that block. Does not validate cordinates
     void   setBlockType(int x, int y, int z, BlockType newType) {
         Block *curr = blocks[x][y][z];
+        if (curr->getType() == newType)
+            return;
+
         nonEmptyBlocks -= (newType == BlockType::Air && curr->getType() != BlockType::Air); // Solid to air then -1
         nonEmptyBlocks
             += (curr->getType() == BlockType::Air && newType != BlockType::Air); // Air to solid block then +1
