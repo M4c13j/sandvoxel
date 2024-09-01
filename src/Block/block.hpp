@@ -73,7 +73,20 @@ struct Cord {
         seed ^= (seed << 6) + (seed >> 2) + 0x5B06034C + static_cast<std::size_t>(obj.z);
         return seed;
     }
-
+    friend bool operator<(const Cord &lhs, const Cord &rhs) {
+        if (lhs.x < rhs.x)
+            return true;
+        if (rhs.x < lhs.x)
+            return false;
+        if (lhs.y < rhs.y)
+            return true;
+        if (rhs.y < lhs.y)
+            return false;
+        return lhs.z < rhs.z;
+    }
+    friend bool operator<=(const Cord &lhs, const Cord &rhs) { return !(rhs < lhs); }
+    friend bool operator>(const Cord &lhs, const Cord &rhs) { return rhs < lhs; }
+    friend bool operator>=(const Cord &lhs, const Cord &rhs) { return !(lhs < rhs); }
     Cord operator+(const Cord &rhs) const { return (Cord){x + rhs.x, y + rhs.y, z + rhs.z}; }
     Cord operator-(const Cord &rhs) const { return (Cord){x - rhs.x, y - rhs.y, z - rhs.z}; }
     void operator+=(const Cord &rhs) {
@@ -117,7 +130,7 @@ template <> struct std::hash<Cord> {
 // Factory produces blocks. Blocks have texture cordinates and vertex colors assigned to them.
 // Enum specifes available block types.
 
-enum class BlockType { Air = 0, Dirt, Plank, Sand, Fluid, TypeCount };
+enum class BlockType { Air = 0, Dirt, Plank, Sand, Grass, Fluid, TypeCount };
 
 // Alignment changed size of Block from 40B to 24B, just reordering shit around. Why compilers dont do it?
 // Block will of course be optimised in future, it has many redundant stuff, but for now it is what it is.

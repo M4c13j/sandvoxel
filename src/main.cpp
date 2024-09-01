@@ -34,15 +34,15 @@ int main(int argc, char** argv)
     Chunk chunk = Chunk({0, -config::CHUNK_SIZE/2,0}, 0);
     // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_perlin(2137u);
-    chunk.generate_mesh();
+    // chunk.generate_mesh();
 
     World *world = new World(); // stack overfow for bigger worlds if allocated on stack;
     Benchmark bench("Chunk mesh ", 1);
     Benchmark single("Single chunk mesh, with neighbours", 1);
     bench.start();
-        world->generate_perlin_chunks(2137u);
+        world->generate_perlin_chunks(10000000u);
         world->mesh_all_chunks();
-    bench.stop(World::side * World::side * World::height);
+    bench.stop(world->side * world->side * world->height);
     single.start();
         int single_iters = 1000;
         for (int i = 0; i < single_iters; i++) {
@@ -59,8 +59,11 @@ int main(int argc, char** argv)
                   && airInst.getColors()[3] == 0);
     assert(airInst.isTransparent() == true);
 
-    world->addFluid(-4, 20, 9);
 
+    bool DAWG = true; // to skip initial lag
+    float startTime = GetTime() + 5.0f; // count from now, just before main loop
+    const float deltaPeriod = 0.0f;
+    const float stopTime = startTime + 2;
     //==================================== RLGL (opengl abstr) changes ============================================
     rlSetLineWidth(3.0f); // lines are finally more visible and not as annoying
     // rlEnableWireMode(); // Draw wires only!
@@ -69,6 +72,19 @@ int main(int argc, char** argv)
     while (!WindowShouldClose()) {
         UpdateCamera(&player.camera, CAMERA_FREE);
 
+        if (GetTime() > startTime && GetTime() < stopTime && DAWG) {
+            for (int x = -4; x <= 4; x++) {
+                for (int z = 6; z <= 10; z++) {
+                    world->addFluid(x, 15, z);
+                }
+            }
+            // world->addFluid(-4, 20, 9);
+            // world->addFluid(-4+1, 20, 9);
+            // world->addFluid(-4, 20, 9+1);
+            // world->addFluid(-4+1, 20, 9+1);
+            startTime += deltaPeriod;
+            // DAWG = false;
+        }
         world->update();
         // Rendering
         // Wire debugger

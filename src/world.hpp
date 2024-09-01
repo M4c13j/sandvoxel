@@ -9,6 +9,7 @@
 #include <array>
 #include <deque>
 #include <queue>
+#include <set>
 #include <unordered_set>
 
 /// World is made of chunks that are made of blocks
@@ -23,14 +24,15 @@ public:
     // IMPORTANT: if World is stored in stack and it has more than ~60 chunks, it may fill whole stack (on my WSL 2
     // debian it is 8kb and it is standard). You have to allocate World on heap otherwise code may have segfault at the
     // begging of main :(.
-    static constexpr size_t side   = config::MAP_SIDE_IN_CHUNKS; // for now, strict size
-    static constexpr size_t height = config::MAP_HEIGHT_IN_CHUNKS;
+    const size_t side   = config::MAP_SIDE_IN_CHUNKS; // for now, strict size
+    const size_t height = config::MAP_HEIGHT_IN_CHUNKS;
     Vector3                 drawOffset; // offset so that mesh is drawn correctly
     FluidSimulation         fluidSim;
 
 private:
     Chunk chunks[config::MAP_SIDE_IN_CHUNKS][config::MAP_HEIGHT_IN_CHUNKS][config::MAP_SIDE_IN_CHUNKS];
-    std::unordered_set<Cord> activeChunks; // CONTAINS CHUNK RAW CORDINATES of chunks to update
+    u_int64_t updateCounter = 0;
+    std::set<Cord> activeChunks; // CONTAINS CHUNK RAW CORDINATES of chunks to update
 
 public:
      World();
@@ -70,13 +72,14 @@ public:
     Chunk &get_chunk(int x, int y, int z) { return get_chunk_raw_access(chunk_cord_of_block(x, y, z)); }
     Chunk &get_chunk(Cord cord) { return get_chunk_raw_access(chunk_cord_of_block(Vector3(cord))); }
 
+    void add_chunk_from_block_to_update(int x, int y, int z) { activeChunks.insert(chunk_cord_of_block(x, y, z)); }
     void blockHasBeenModified(int x, int y, int z) {
-        activeChunks.insert(chunk_cord_of_block(x, y, z));
+       add_chunk_from_block_to_update(x, y, z);
         for (int dir = 0; dir < DIR_COUNT; dir++) {
             Cord neighCord = {x,y,z};
             neighCord.add_dir(static_cast<Dir>(dir));
             if (isInWorld(neighCord.x, neighCord.y, neighCord.z))
-                activeChunks.insert(chunk_cord_of_block(neighCord.x, neighCord.y, neighCord.z));
+                add_chunk_from_block_to_update(neighCord.x, neighCord.y, neighCord.z);
         }
     }
     void addFluid(int x, int y, int z);
@@ -90,8 +93,11 @@ public:
     }
 
     void mesh_all_chunks();
-    void update(); // update everything every frame, including active chunks and Fluids
     void draw_all(Texture &atlas, DrawChunkFlags flags);
+
+    void update(); // update everything every frame, including active chunks and Fluids
+    void update_active_meshes();
+    void update_simulations();
 
     void print_size_report() const;
     bool isInWorld(int x, int y, int z) const {

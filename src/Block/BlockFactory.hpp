@@ -2,8 +2,9 @@
 
 #include "Air.hpp"
 #include "Dirt.hpp"
-#include "Sand.hpp"
 #include "Fluid.hpp"
+#include "Grass.hpp"
+#include "Sand.hpp"
 
 #include <cassert>
 
@@ -17,6 +18,7 @@ public:
     Block *getObjectFromType(BlockType type) const {
         assert(classesInitialised); // "Classes have not been initialised!"
         if (type == BlockType::Air) return new Air();
+        if (type == BlockType::Grass) return new Grass();
         if (type == BlockType::Sand) return new Sand();
         if (type == BlockType::Fluid) return new Fluid();
         assert(false);
@@ -25,6 +27,7 @@ public:
     void initBlocks() {
         Air().init();
         Sand().init();
+        Grass().init();
         Fluid().init();
         classesInitialised = true;
 

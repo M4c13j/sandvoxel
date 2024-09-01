@@ -6,12 +6,15 @@
 #include <deque>
 
 class World;
+
+// Only active cells distribute water
+// TODO: add evaporation
 class FluidSimulation {
     const float MAX_MASS     = 1.0f;
     const float MAX_COMPRESS = 0.02;
 
     const float MIN_MASS = 0.0001;
-    const float MIN_FLOW = 0.001;
+    const float MIN_FLOW = 0.01;
 
     const float MIN_DRAW = 0.01;
     const float MAX_DRAW = 1.1;

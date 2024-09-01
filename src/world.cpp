@@ -57,7 +57,7 @@ void World::generate_perlin_chunks(uint_fast32_t seed) {
                                  * MAP_HEIGHT_BLOCKS;
                     for (int by = 0; by < MAP_HEIGHT_BLOCKS; by++) {
                         chunks[x][by / config::CHUNK_SIZE][z].setBlockType(
-                            bx, by % config::CHUNK_SIZE, bz, by > glevel ? BlockType::Air : BlockType::Sand);
+                            bx, by % config::CHUNK_SIZE, bz, by > glevel ? BlockType::Air : BlockType::Grass);
                     }
                 }
             }
@@ -106,16 +106,25 @@ void World::addFluid(int x, int y, int z) {
     blockHasBeenModified(x, y, z);
 }
 
-void World::update() {
-    // Update simulations
-    fluidSim.update();
-
-    if (!activeChunks.empty())
-        printf("[WORLD] Meshed chunks: %lu\n", activeChunks.size());
-
-    for (auto it = activeChunks.begin(); it != activeChunks.end(); ++it) {
-        get_chunk_raw_access(*it).generate_mesh();
+void World::update_active_meshes() {
+    // if (!activeChunks.empty())
+    //     printf("[WORLD] Meshed chunks: %lu\n", activeChunks.size());
+    const u_short UPDATES_PER_FRAME = 100;
+    for (int i = 0; i < UPDATES_PER_FRAME; i++) {
+        if (!activeChunks.empty()) {
+            auto it = activeChunks.begin();
+            get_chunk_raw_access(*it).generate_mesh();
+            activeChunks.erase(it);
+        }
     }
-
-    activeChunks.clear();
 }
+
+void World::update_simulations() {
+    fluidSim.update();
+}
+
+void World::update() {
+    update_simulations();
+    update_active_meshes();
+}
+

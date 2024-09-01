@@ -2,12 +2,14 @@
 #include "../world.hpp"
 
 void FluidSimulation::addFluidInitMass(int x, int y, int z, float mass) {
+    assert(mass <= MAX_MASS);
     activeFluids.push_back({x, y, z});
     world.setBlock(x, y, z, BlockType::Fluid);
     Fluid *newBLock   = dynamic_cast<Fluid *>(world.get_block(x, y, z));
     newBLock->mass    = mass;
     newBLock->newMass = mass;
 }
+
 void FluidSimulation::addFluidInitMass(Cord cord, float mass) { addFluidInitMass(cord.x, cord.y, cord.z, mass); }
 
 void FluidSimulation::addFluid(int x, int y, int z) { addFluidInitMass(x, y, z, MAX_MASS); }
@@ -40,7 +42,7 @@ void FluidSimulation::update() {
 
     size_t initFluids = activeFluids.size();
     for (int i = 0; i < initFluids; i++) {
-        auto currCords = activeFluids.front(); activeFluids.pop_front(); activeFluids.push_back(currCords);
+        const auto currCords = activeFluids[i];
         auto* curr = dynamic_cast<Fluid *>(world.get_block(currCords.x, currCords.y, currCords.z));
         auto currType = curr->getType();
 
@@ -61,17 +63,15 @@ void FluidSimulation::update() {
         if (neighbours[currentDir] != nullptr && isAirOrFluid(neighbours[currentDir]->getType())) {
             Fluid *currNeigh = dynamic_cast<Fluid *>(neighbours[currentDir]);
             if (neighbours[currentDir]->getType() == BlockType::Air) {
-                Cord neighCord = currCords; neighCord.add_dir(currentDir);
+                Cord neighCord = currCords;
+                neighCord.add_dir(currentDir);
                 addFluidInitMass(neighCord, 0.0f);
-                currNeigh
-                    = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
+                currNeigh = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
             }
 
             float currNeighInitMass = currNeigh->mass;
-
             flow = get_stable_state_b(remainingMass + currNeighInitMass) - currNeighInitMass;
             if (flow > MIN_FLOW) flow *= 0.5;
-
             flow = constrain(flow, 0.0f, std::min(MAX_SPEED, remainingMass));
 
             curr->newMass -= flow;
@@ -84,21 +84,19 @@ void FluidSimulation::update() {
         // Loop over all XZ dirs and calculate stuff
         constexpr Dir flatDirs[] = {DIR_NORTH, DIR_SOUTH, DIR_EAST, DIR_WEST};
         for (auto planarDir : flatDirs) {
-            assert( remainingMass > 0);
+            assert(remainingMass > 0);
             if (neighbours[planarDir] != nullptr && isAirOrFluid(neighbours[planarDir]->getType())) {
                 Fluid *currNeigh = dynamic_cast<Fluid *>(neighbours[planarDir]);
                 if (neighbours[planarDir]->getType() == BlockType::Air) {
-                    Cord neighCord = currCords; neighCord.add_dir(planarDir);
+                    Cord neighCord = currCords;
+                    neighCord.add_dir(planarDir);
                     addFluidInitMass(neighCord, 0.0f);
-                    currNeigh
-                        = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
+                    currNeigh = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
                 }
 
                 float currNeighInitMass = currNeigh->mass;
-
-                flow = (curr->mass - currNeighInitMass) / 4.0f;
+                flow  = (curr->mass - currNeighInitMass) / 4.0f;
                 if (flow > MIN_FLOW) flow *= 0.5;
-
                 flow = constrain(flow, 0.0f, remainingMass);
 
                 curr->newMass -= flow;
@@ -106,33 +104,27 @@ void FluidSimulation::update() {
                 remainingMass -= flow;
             }
 
-            if (remainingMass <= 0) break;
+            if (remainingMass <= 0)
+                break;
         }
     }
 
     int fluidsToCheck = activeFluids.size();
     for (int i = 0; i < fluidsToCheck; i++) {
-        auto akt = activeFluids.front(); activeFluids.pop_front();
-        Fluid* currFluid = dynamic_cast<Fluid*>(world.get_block(akt.x, akt.y, akt.z));
-        currFluid->mass = currFluid->newMass;
+        auto akt = activeFluids.front();
+        activeFluids.pop_front();
+        Fluid *currFluid = dynamic_cast<Fluid *>(world.get_block(akt.x, akt.y, akt.z));
+        bool   isActive  = currFluid->mass != currFluid->newMass;
+        currFluid->mass  = currFluid->newMass;
 
         // Remove fluid if its mass is less than minimal
         if (currFluid->mass < MIN_MASS) {
             world.setBlock(akt.x, akt.y, akt.z, BlockType::Air);
-        }
-        else {
-            activeFluids.push_back(akt);
+        } else {
+            // if (currFluid->changed)
+                activeFluids.push_back(akt);
         }
     }
-        /*for (int dir = 0; dir < DIR_COUNT; dir++) {
-            Cord neighPos = addNormalDir(currCords, static_cast<Dir>(dir));
-            auto neighbour = world.get_block(neighPos.x, neighPos.y, neighPos.z);
-            if (neighbour->getType() == BlockType::Air) {
-                if (curr->mass > 1) {
-                    addFluid(neighPos.x, neighPos.y, neighPos.z);
-                }
-            }
-        }*/
 }
 
 float FluidSimulation::get_stable_state_b(float totalMass) {

@@ -73,6 +73,8 @@ add_executable(${PROJECT_NAME}
         src/Block/Fluid.hpp
         src/FluidSimulation/FluidSimulation.cpp
         src/FluidSimulation/FluidSimulation.hpp
+        src/Block/Grass.cpp
+        src/Block/Grass.hpp
         #        src/Block/Air.hpp
 )
 
