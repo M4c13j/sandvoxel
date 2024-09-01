@@ -59,10 +59,10 @@ int main(int argc, char** argv)
                   && airInst.getColors()[3] == 0);
     assert(airInst.isTransparent() == true);
 
-    world->addFluid(-4, 0, 9);
+    world->addFluid(-4, 20, 9);
 
     //==================================== RLGL (opengl abstr) changes ============================================
-    rlSetLineWidth(2.0f); // lines are finally more visible and not as annoying
+    rlSetLineWidth(3.0f); // lines are finally more visible and not as annoying
     // rlEnableWireMode(); // Draw wires only!
 
     // Main loop ==============================
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
              // debug stays
              DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
              DrawText(TextFormat("Fps: %d  |  Frame time: %.2fms", GetFPS(), GetFrameTime()*1000), 10, 30, 20, DARKGRAY);
-             DrawText(TextFormat("  Chunk: %s", world->chunk_cord_from_position(player.camera.position).toString().c_str()), 10, 50, 20, DARKGRAY);
+             DrawText(TextFormat("  Chunk: %s", world->chunk_cord_of_block(player.camera.position).toString().c_str()), 10, 50, 20, DARKGRAY);
              DrawText(TextFormat("Camera Position: [%.2f, %.2f, %.2f]", player.camera.position.x, player.camera.position.y, player.camera.position.z), 10, 70, 20, DARKGRAY);
              DrawText(TextFormat("  Camera target: [%.2f, %.2f, %.2f]", player.camera.target.x, player.camera.target.y, player.camera.target.z), 10, 90, 20, DARKGRAY);
 

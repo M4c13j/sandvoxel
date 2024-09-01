@@ -33,13 +33,10 @@ void FluidSimulation::add_additional_fluids() {
 
 // https://w-shadow.com/blog/2009/09/01/simple-fluid-simulation/
 // https://tomforsyth1000.github.io/papers/cellular_automata_for_physical_modelling.html
-void FluidSimulation::update(std::deque<Cord> &chunksToUpdate) {
+void FluidSimulation::update() {
     if (!shouldUpdate())
         return; // do not update yet
     lastUpdateTime = GetTime();
-
-    puts("Fluid update...\n");
-
 
     size_t initFluids = activeFluids.size();
     for (int i = 0; i < initFluids; i++) {
@@ -64,9 +61,10 @@ void FluidSimulation::update(std::deque<Cord> &chunksToUpdate) {
         if (neighbours[currentDir] != nullptr && isAirOrFluid(neighbours[currentDir]->getType())) {
             Fluid *currNeigh = dynamic_cast<Fluid *>(neighbours[currentDir]);
             if (neighbours[currentDir]->getType() == BlockType::Air) {
-                addFluidInitMass(currCords + FACE_NORMALS[currentDir], 0.0f);
+                Cord neighCord = currCords; neighCord.add_dir(currentDir);
+                addFluidInitMass(neighCord, 0.0f);
                 currNeigh
-                    = dynamic_cast<Fluid *>(world.get_block_neigh(currCords.x, currCords.y, currCords.z, currentDir));
+                    = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
             }
 
             float currNeighInitMass = currNeigh->mass;
@@ -90,9 +88,10 @@ void FluidSimulation::update(std::deque<Cord> &chunksToUpdate) {
             if (neighbours[planarDir] != nullptr && isAirOrFluid(neighbours[planarDir]->getType())) {
                 Fluid *currNeigh = dynamic_cast<Fluid *>(neighbours[planarDir]);
                 if (neighbours[planarDir]->getType() == BlockType::Air) {
-                    addFluidInitMass(currCords + FACE_NORMALS[planarDir], 0.0f);
+                    Cord neighCord = currCords; neighCord.add_dir(planarDir);
+                    addFluidInitMass(neighCord, 0.0f);
                     currNeigh
-                        = dynamic_cast<Fluid *>(world.get_block_neigh(currCords.x, currCords.y, currCords.z, planarDir));
+                        = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
                 }
 
                 float currNeighInitMass = currNeigh->mass;

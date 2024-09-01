@@ -7,3 +7,12 @@ Use command to generate readable file:
 gprof EXECUTABLE_NAME > output.txt
 ```
 voila!
+
+
+## With perf
+Use following comands:
+```bash
+    sudo perf record -g ./path/to/exec
+    sudo perf report -g 'graph,.5,caller'
+'''
+
