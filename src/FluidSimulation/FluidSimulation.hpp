@@ -37,7 +37,7 @@ public:
     void     update();
     bool     shouldUpdate() const { return GetTime() - lastUpdateTime > tickTimeDiff; }
     void     addSource(int x, int y, int z, int strenghInTicks);
-
+    void remove_empty_fluids();
 private:
     void  update_blocks();
     float get_stable_state_b(float totalMass);
