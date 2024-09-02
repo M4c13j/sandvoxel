@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Block/BlockFactory.hpp"
-#include "config.hpp"
+#include "../Block/BlockFactory.hpp"
+#include "../config.hpp"
 #include "raylib.h"
 
 #include <vector>

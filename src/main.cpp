@@ -1,12 +1,12 @@
 #include "Block/Air.hpp"
 #include "Block/Sand.hpp"
 #include "benchmark.hpp"
-#include "chunk.hpp"
+#include "World/chunk.hpp"
 #include "config.hpp"
 #include "player.hpp"
 #include "raylib.h"
 #include "raymath.h"
-#include "world.hpp"
+#include "./World/world.hpp"
 
 #include <cassert>
 #include <cstdio>

@@ -1,5 +1,5 @@
 #include "FluidSimulation.hpp"
-#include "../world.hpp"
+#include "../World/world.hpp"
 
 void FluidSimulation::addFluidInitMass(int x, int y, int z, float mass) {
     assert(mass <= MAX_MASS);

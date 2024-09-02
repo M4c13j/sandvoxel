@@ -1,6 +1,6 @@
 #include "world.hpp"
 
-#include "perlin.hpp"
+#include "../perlin.hpp"
 #include "raymath.h"
 
 #include <iostream>

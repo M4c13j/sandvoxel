@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <cstdio>
 
-#include "Block/BlockFactory.hpp"
+#include "../Block/BlockFactory.hpp"
 #include "chunk.hpp"
-#include "config.hpp"
-#include "perlin.hpp"
+#include "../config.hpp"
+#include "../perlin.hpp"
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"

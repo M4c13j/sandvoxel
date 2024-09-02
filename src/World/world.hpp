@@ -1,7 +1,7 @@
 #pragma once
-#include "FluidSimulation/FluidSimulation.hpp"
+#include "../FluidSimulation/FluidSimulation.hpp"
 #include "chunk.hpp"
-#include "config.hpp"
+#include "../config.hpp"
 #include "raylib.h"
 #include "raymath.h"
 

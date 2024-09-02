@@ -55,9 +55,9 @@ endif( DEFINED USE_IMGUI )
 add_executable(${PROJECT_NAME}
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/player.cpp
-    ${SOURCE_DIR}/chunk.cpp
     ${SOURCE_DIR}/config.hpp
-    ${SOURCE_DIR}/world.cpp
+    ${SOURCE_DIR}/World/chunk.cpp
+    ${SOURCE_DIR}/World/world.cpp
     ${SOURCE_DIR}/renderer.cpp
     ${SOURCE_DIR}/config.cpp
     src/Block/block.cpp
