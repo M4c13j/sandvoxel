@@ -82,7 +82,7 @@ public:
                 add_chunk_from_block_to_update(neighCord.x, neighCord.y, neighCord.z);
         }
     }
-    void addFluid(int x, int y, int z);
+    // void addFluid(int x, int y, int z);
     void setBlock(int x, int y, int z, const BlockType newType) {
         if (get_block(x, y, z)->getType() != newType) {
             blockHasBeenModified(x, y, z);

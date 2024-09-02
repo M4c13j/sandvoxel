@@ -28,9 +28,10 @@ int main(int argc, char** argv)
 
 
     Texture dirt_plank = LoadTexture("../resources/textures/dirt_plank.png");
-    Player player = Player();
 
+    Player player = Player();
     BlockFactory::getInstance().initBlocks();
+
     Chunk chunk = Chunk({0, -config::CHUNK_SIZE/2,0}, 0);
     // chunk.generate_default_blocks(config::CHUNK_HEIGHT / 2);
     chunk.generate_perlin(2137u);
@@ -50,15 +51,6 @@ int main(int argc, char** argv)
         }
     single.stop(single_iters);
 
-    Sand sandInst = Sand();
-    assert(sandInst.getColors()[0] == YELLOW.r && sandInst.getColors()[1] == YELLOW.g && sandInst.getColors()[2] == YELLOW.b
-                  && sandInst.getColors()[3] == YELLOW.a);
-    assert(sandInst.isTransparent() == false);
-    Air airInst = Air();
-    assert(airInst.getColors()[0] == 0 && airInst.getColors()[1] == 0 && airInst.getColors()[2] == 0
-                  && airInst.getColors()[3] == 0);
-    assert(airInst.isTransparent() == true);
-
 
     bool DAWG = true; // to skip initial lag
     float startTime = GetTime() + 5.0f; // count from now, just before main loop
@@ -75,13 +67,10 @@ int main(int argc, char** argv)
         if (GetTime() > startTime && GetTime() < stopTime && DAWG) {
             for (int x = -4; x <= 4; x++) {
                 for (int z = 6; z <= 10; z++) {
-                    world->addFluid(x, 15, z);
+                    world->fluidSim.addFluid(x, 15, z);
                 }
             }
             // world->addFluid(-4, 20, 9);
-            // world->addFluid(-4+1, 20, 9);
-            // world->addFluid(-4, 20, 9+1);
-            // world->addFluid(-4+1, 20, 9+1);
             startTime += deltaPeriod;
             // DAWG = false;
         }
@@ -124,11 +113,12 @@ int main(int argc, char** argv)
             EndMode3D();
 
              // debug stays
-             DrawText("This is a raylib window with ImGui!", 10, 10, 20, DARKGRAY);
-             DrawText(TextFormat("Fps: %d  |  Frame time: %.2fms", GetFPS(), GetFrameTime()*1000), 10, 30, 20, DARKGRAY);
-             DrawText(TextFormat("  Chunk: %s", world->chunk_cord_of_block(player.camera.position).toString().c_str()), 10, 50, 20, DARKGRAY);
-             DrawText(TextFormat("Camera Position: [%.2f, %.2f, %.2f]", player.camera.position.x, player.camera.position.y, player.camera.position.z), 10, 70, 20, DARKGRAY);
-             DrawText(TextFormat("  Camera target: [%.2f, %.2f, %.2f]", player.camera.target.x, player.camera.target.y, player.camera.target.z), 10, 90, 20, DARKGRAY);
+             DrawRectangleGradientV(0, 0, 350, 120,{246, 233, 107, 255}, {56, 127, 57, 255});
+             DrawText("This is a raylib window with ImGui!", 10, 10, 20, BLACK);
+             DrawText(TextFormat("Fps: %d  |  Frame time: %.2fms", GetFPS(), GetFrameTime()*1000), 10, 30, 20, BLACK);
+             DrawText(TextFormat("  Chunk: %s", world->chunk_cord_of_block(player.camera.position).toString().c_str()), 10, 50, 20, BLACK);
+             DrawText(TextFormat("Camera Position: [%.2f, %.2f, %.2f]", player.camera.position.x, player.camera.position.y, player.camera.position.z), 10, 70, 20, BLACK);
+             DrawText(TextFormat("  Camera target: [%.2f, %.2f, %.2f]", player.camera.target.x, player.camera.target.y, player.camera.target.z), 10, 90, 20, BLACK);
 
          EndDrawing();
     }

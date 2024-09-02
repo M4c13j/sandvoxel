@@ -98,13 +98,13 @@ void World::draw_all(Texture &atlas, DrawChunkFlags flags) {
     }
 }
 
-void World::addFluid(int x, int y, int z) {
-    if (get_block(x,y,z)->getType() == BlockType::Fluid) { // TODO: Use isFluid instead
-        return;
-    }
-    fluidSim.addFluid(x, y, z);
-    blockHasBeenModified(x, y, z);
-}
+// void World::addFluid(int x, int y, int z) {
+//     if (get_block(x,y,z)->getType() == BlockType::Fluid) { // TODO: Use isFluid instead
+//         return;
+//     }
+//     fluidSim.addFluid(x, y, z);
+//     blockHasBeenModified(x, y, z);
+// }
 
 void World::update_active_meshes() {
     // if (!activeChunks.empty())
