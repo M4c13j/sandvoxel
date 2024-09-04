@@ -1,7 +1,7 @@
 #include "FluidSimulation.hpp"
 #include "../World/world.hpp"
 
-void FluidSimulation::addFluidInitMass(int x, int y, int z, float mass) {
+void FluidSimulation::addBlockInitMass(int x, int y, int z, float mass) {
     assert(mass <= MAX_MASS);
     bool blockNotFluid = world.get_block(x,y,z)->getType() != BlockType::Fluid;
     if (blockNotFluid) { // TODO: Use isFluid instead
@@ -12,15 +12,13 @@ void FluidSimulation::addFluidInitMass(int x, int y, int z, float mass) {
     Fluid* newBLock   = dynamic_cast<Fluid *>(world.get_block(x, y, z));
     newBLock->mass    = mass;
     newBLock->newMass = mass;
-
-    world.blockHasBeenModified(x, y, z); // inform world
 }
 
-void FluidSimulation::addFluidInitMass(Cord cord, float mass) { addFluidInitMass(cord.x, cord.y, cord.z, mass); }
+void FluidSimulation::addBlockInitMass(Cord cord, float mass) { addBlockInitMass(cord.x, cord.y, cord.z, mass); }
 
-void FluidSimulation::addFluid(int x, int y, int z) { addFluidInitMass(x, y, z, MAX_MASS); }
+void FluidSimulation::addBlock(int x, int y, int z) { addBlockInitMass(x, y, z, MAX_MASS); }
 
-void FluidSimulation::addFluid(Cord cord) { addFluidInitMass(cord, MAX_MASS); }
+void FluidSimulation::addBlock(Cord cord) { addBlockInitMass(cord, MAX_MASS); }
 
 static bool isAirOrFluid(BlockType type) { return type == BlockType::Fluid || type == BlockType::Air; }
 
@@ -72,7 +70,7 @@ void FluidSimulation::update() {
             if (neighbours[currentDir]->getType() == BlockType::Air) {
                 Cord neighCord = currCords;
                 neighCord.add_dir(currentDir);
-                addFluidInitMass(neighCord, 0.0f);
+                addBlockInitMass(neighCord, 0.0f);
                 currNeigh = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
             }
 
@@ -99,7 +97,7 @@ void FluidSimulation::update() {
                 if (neighbours[planarDir]->getType() == BlockType::Air) {
                     Cord neighCord = currCords;
                     neighCord.add_dir(planarDir);
-                    addFluidInitMass(neighCord, 0.0f);
+                    addBlockInitMass(neighCord, 0.0f);
                     currNeigh = dynamic_cast<Fluid *>(world.get_block(neighCord.x, neighCord.y, neighCord.z));
                 }
 

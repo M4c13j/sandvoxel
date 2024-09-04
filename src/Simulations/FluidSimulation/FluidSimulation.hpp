@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Block/Fluid.hpp"
+#include "Simulation.hpp"
 #include <vector>
 
 #include <deque>
@@ -9,7 +10,7 @@ class World;
 
 // Only active cells distribute water
 // TODO: add evaporation
-class FluidSimulation {
+class FluidSimulation : Simulation {
     const float MAX_MASS     = 1.0f;
     const float MAX_COMPRESS = 0.02;
 
@@ -25,19 +26,18 @@ class FluidSimulation {
     int    tickTimeDiff   = 1.0f / tickPerSecond;
     double lastUpdateTime = 0.0f;
 
-    World           &world;
     std::deque<Cord> activeFluids;
 
 public:
-    explicit FluidSimulation(World &world) : world(world){};
-    void     addFluidInitMass(int x, int y, int z, float mass);
-    void     addFluidInitMass(Cord cord, float mass);
-    void     addFluid(int x, int y, int z);
-    void     addFluid(Cord cord);
-    void     update();
-    bool     shouldUpdate() const { return GetTime() - lastUpdateTime > tickTimeDiff; }
+    explicit FluidSimulation(World &world) : Simulation(world){};
+    void     addBlockInitMass(int x, int y, int z, float mass);
+    void     addBlockInitMass(Cord cord, float mass);
+    void     addBlock(int x, int y, int z) override;
+    void     addBlock(Cord cord) override;
+    void     update() override;
     void     addSource(int x, int y, int z, int strenghInTicks);
-    void remove_empty_fluids();
+    void     remove_empty_fluids();
+
 private:
     void  update_blocks();
     float get_stable_state_b(float totalMass);

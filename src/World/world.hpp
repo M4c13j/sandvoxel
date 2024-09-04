@@ -1,7 +1,8 @@
 #pragma once
-#include "../FluidSimulation/FluidSimulation.hpp"
-#include "chunk.hpp"
 #include "../config.hpp"
+#include "FluidSimulation/FluidSimulation.hpp"
+#include "SandSImulation/SandSimulation.hpp"
+#include "chunk.hpp"
 #include "raylib.h"
 #include "raymath.h"
 
@@ -24,10 +25,11 @@ public:
     // IMPORTANT: if World is stored in stack and it has more than ~60 chunks, it may fill whole stack (on my WSL 2
     // debian it is 8kb and it is standard). You have to allocate World on heap otherwise code may have segfault at the
     // begging of main :(.
-    const size_t side   = config::MAP_SIDE_IN_CHUNKS; // for now, strict size
-    const size_t height = config::MAP_HEIGHT_IN_CHUNKS;
-    Vector3                 drawOffset; // offset so that mesh is drawn correctly
-    FluidSimulation         fluidSim;
+    const size_t    side   = config::MAP_SIDE_IN_CHUNKS; // for now, strict size
+    const size_t    height = config::MAP_HEIGHT_IN_CHUNKS;
+    Vector3         drawOffset; // offset so that mesh is drawn correctly
+    FluidSimulation fluidSim;
+    SandSimulation  sandSim;
 
 private:
     Chunk chunks[config::MAP_SIDE_IN_CHUNKS][config::MAP_HEIGHT_IN_CHUNKS][config::MAP_SIDE_IN_CHUNKS];

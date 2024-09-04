@@ -62,8 +62,8 @@ int main(int argc, char** argv)
 
     // Main loop ==============================
     while (!WindowShouldClose()) {
-        UpdateCamera(&player.camera, CAMERA_FREE);
 
+        // FLUID DEMO ==================================================================================================
         if (GetTime() > startTime && GetTime() < stopTime && DAWG) {
             for (int x = -4; x <= 4; x++) {
                 for (int z = 6; z <= 10; z++) {
@@ -75,27 +75,21 @@ int main(int argc, char** argv)
             // DAWG = false;
         }
 
+        // UPDATE WORLD AND SIMULATION =================================================================================
+        UpdateCamera(&player.camera, CAMERA_FREE); // movement related
         world->update();
 
-        // Rendering
         // Wire debugger
         if (IsKeyDown(KEY_R))
             rlEnableWireMode();
         else
             rlDisableWireMode();
 
-        // for (int i=0;i<5;i++) chunk.generate_mesh();
 
         Ray ray;//player.camera.position, player.camera.target);
         ray.direction = player.camera.target;
         ray.position = player.camera.position;
-        // for (int ix = 0; ix < 10; ix++) { // LAGING MACHINE
-        //     if (world->get_chunk_raw_access({10, 5, 10}).isEmpty()) {
-        //         return 0;
-        //     }
-        //     // world->get_chunk_raw_access({10, 5, 10}).generate_mesh();
-        //     world->get_chunk_raw_access({world->side/2, world->height/2, world->side/2}).generate_mesh();
-        // }
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
 

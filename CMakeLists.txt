@@ -23,6 +23,10 @@ set(RAYLIB_PATH /usr/local)
 # RAYLIB ===============
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/src/Simulations
+        ${PROJECT_SOURCE_DIR}/src/Block
+        ${PROJECT_SOURCE_DIR}/src/World
 )
 # Bez add_library, bo jest już zbudowany, więc target_link sam znajdzie
 
@@ -71,10 +75,13 @@ add_executable(${PROJECT_NAME}
         src/Block/Air.cpp
         src/Block/Fluid.cpp
         src/Block/Fluid.hpp
-        src/FluidSimulation/FluidSimulation.cpp
-        src/FluidSimulation/FluidSimulation.hpp
+        src/Simulations/FluidSimulation/FluidSimulation.cpp
+        src/Simulations/FluidSimulation/FluidSimulation.hpp
         src/Block/Grass.cpp
         src/Block/Grass.hpp
+        src/Simulations/SandSImulation/SandSimulation.cpp
+        src/Simulations/SandSImulation/SandSimulation.hpp
+        src/Simulations/Simulation.hpp
         #        src/Block/Air.hpp
 )
 
