@@ -67,7 +67,8 @@ int main(int argc, char** argv)
         if (GetTime() > startTime && GetTime() < stopTime && DAWG) {
             for (int x = -4; x <= 4; x++) {
                 for (int z = 6; z <= 10; z++) {
-                    world->fluidSim.addFluid(x, 15, z);
+                    world->fluidSim.addBlock(x, 15, z);
+                    world->sandSim.addBlock(x+10, 15+10, z+10);
                 }
             }
             // world->addFluid(-4, 20, 9);
