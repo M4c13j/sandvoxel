@@ -13,12 +13,17 @@ public:
             colors[i + 3] = col.a;
         }
     }
+
+    bool      isSolid() override { return solid; }
+    bool      isFluid() override { return fluid; }
     bool      isTransparent() override { return trans; }
     BlockType getType() override { return type; }
     u_char   *getColors() override { return colors; }
     float    *getTexcoords() override { return texcoords; };
 
 private:
+    static bool      fluid;
+    static bool      solid;
     static bool      trans;
     static BlockType type;
     static u_char    colors[COLOR_DATA_PER_FACE * 6];

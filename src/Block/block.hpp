@@ -154,6 +154,8 @@ public:
     void                generate_face(FacePlacementData &dest, Dir dir, Cord pos);
     [[deprecated]] void draw_face(Cord pos, Dir dir); // used for debuging, long time ago
     virtual bool        isTransparent() = 0;
+    virtual bool        isSolid()       = 0;
+    virtual bool        isFluid()       = 0;
     virtual BlockType   getType()       = 0;
     virtual u_char     *getColors()     = 0;
     virtual float      *getTexcoords()  = 0;

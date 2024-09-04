@@ -5,14 +5,19 @@ class Air : public Block {
 public:
               Air()          = default;
     void      init() override {}
-    bool      isTransparent() override { return trans; }
-    BlockType getType() override { return type; }
-    u_char   *getColors() override { return colors; }
-    float    *getTexcoords() override { return texcoords; }
+
+  bool      isSolid() override { return solid; }
+  bool      isFluid() override { return fluid; }
+  bool      isTransparent() override { return trans; }
+  BlockType getType() override { return type; }
+  u_char   *getColors() override { return colors; }
+  float    *getTexcoords() override { return texcoords; };
 
 private:
-    static bool      trans;
-    static BlockType type;
-    static u_char    colors[COLOR_DATA_PER_FACE * 6];
-    static float texcoords[TEXTURE_DATA_PER_FACE * 6]; // texture data for every face (indexed by normal from given Dir
+  static bool      fluid;
+  static bool      solid;
+  static bool      trans;
+  static BlockType type;
+  static u_char    colors[COLOR_DATA_PER_FACE * 6];
+  static float texcoords[TEXTURE_DATA_PER_FACE * 6]; // texture data for every face (indexed by normal from given Dir
 };

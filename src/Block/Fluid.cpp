@@ -1,9 +1,11 @@
 #include "Fluid.hpp"
 
-bool      Fluid::trans = false;
-BlockType Fluid::type = BlockType::Fluid;
-u_char    Fluid::colors[COLOR_DATA_PER_FACE * 6] = {0}; // TODO: wypełnić
-float Fluid::texcoords[TEXTURE_DATA_PER_FACE * 6] = {0};
+bool      Fluid::fluid                                = true;
+bool      Fluid::solid                                = false;
+bool      Fluid::trans                                = false;
+BlockType Fluid::type                                 = BlockType::Fluid;
+u_char    Fluid::colors[COLOR_DATA_PER_FACE * 6]      = {0}; // TODO: wypełnić
+float     Fluid::texcoords[TEXTURE_DATA_PER_FACE * 6] = {0};
 
 void Fluid::init() {
     Color col = BLUE;
