@@ -74,7 +74,9 @@ int main(int argc, char** argv)
             startTime += deltaPeriod;
             // DAWG = false;
         }
+
         world->update();
+
         // Rendering
         // Wire debugger
         if (IsKeyDown(KEY_R))

@@ -140,12 +140,18 @@ void Chunk::check_visible_faces() {
 }
 
 void Chunk::generate_mesh() {
-    if (isEmpty())
+    if (isEmpty()) {
+        model.meshes[0].vertexCount = 0;
+        model.meshes[0].triangleCount = 0;
         return; // why bother?
+    }
 
     check_visible_faces(); // find all visible faces if there are any
-    if (visibleFaces == 0)
+    if (visibleFaces == 0) {
+        model.meshes[0].vertexCount = 0;
+        model.meshes[0].triangleCount = 0;
         return; // do not allocate memory or other things if there ar no face visible.
+    }
 
     // constexpr int BLOCKS_IN_CHUNK = config::CHUNK_HEIGHT * config::CHUNK_SIZE * config::CHUNK_SIZE;
     const int VERTEX_DATA_TOTAL  = VERTEX_DATA_PER_FACE * visibleFaces;
@@ -197,6 +203,7 @@ void Chunk::generate_mesh() {
     chunkMeshRef.triangleCount = indexCount; // change it
     chunkMeshRef.vertexCount = vertexCount;
 
-    UploadMesh(model.meshes, false);
+    printf("Uploading mesh %d %d %d\n", cords.x, cords.y, cords.z);
+    UploadMesh(model.meshes, true);
     // boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }

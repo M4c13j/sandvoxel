@@ -38,7 +38,6 @@ public:
 
 private:
     Block *blocks[config::CHUNK_SIZE][config::CHUNK_SIZE][config::CHUNK_SIZE]; // array of blocks of chunk (xyz)
-    std::vector<Fluid> fluids;
     void               init_blocks();
 
 public:

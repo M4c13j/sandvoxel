@@ -32,7 +32,7 @@ public:
 private:
     Chunk chunks[config::MAP_SIDE_IN_CHUNKS][config::MAP_HEIGHT_IN_CHUNKS][config::MAP_SIDE_IN_CHUNKS];
     u_int64_t updateCounter = 0;
-    std::set<Cord> activeChunks; // CONTAINS CHUNK RAW CORDINATES of chunks to update
+    std::unordered_set<Cord> activeChunks; // CONTAINS CHUNK RAW CORDINATES of chunks to update
 
 public:
      World();
@@ -100,6 +100,7 @@ public:
     void update_simulations();
 
     void print_size_report() const;
+    size_t get_chunk_count() const { return side * side * height; }
     bool isInWorld(int x, int y, int z) const {
         return (drawOffset.x <= x) && (x < (-1) * drawOffset.x) && (drawOffset.y <= y) && (y < (-1) * drawOffset.y)
                && (drawOffset.z <= z) && (z < (-1) * drawOffset.z);

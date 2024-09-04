@@ -3,8 +3,10 @@
 #include "../perlin.hpp"
 #include "raymath.h"
 
+#include <execution>
 #include <iostream>
-#include <set>
+#include <thread>
+#include <cassert>
 
 void World::print_size_report() const {
     std::cout << "=========== SIZE report ============" << std::endl;
@@ -79,13 +81,24 @@ std::array<Block *, DIR_COUNT> World::get_all_neighbours(int x, int y, int z) {
 }
 
 void World::mesh_all_chunks() {
-    for (auto &plane: chunks) {
-        for (auto &row : plane) {
-            for (auto &chunk : row) {
-                chunk.generate_mesh();
+    std::vector<Cord> allCords(get_chunk_count());
+    // std::fill
+    int n = 0;
+    std::generate(allCords.begin(), allCords.end(), [&n, this] {
+        return Cord{n / (side * height), (n/side) % height, (n++) % side};
+    });
+
+    for (int i = 0, dd = 0; i < side; i++) {
+        for (int j = 0; j < height; j++) {
+            for (int k = 0; k < side; k++) {
+                assert((allCords[dd++] == (Cord){i,j,k}));
             }
         }
     }
+
+    std::for_each(std::execution::par_unseq, allCords.begin(), allCords.end(), [this](Cord cordIt) {
+        get_chunk_raw_access(cordIt).generate_mesh();
+    });
 }
 
 void World::draw_all(Texture &atlas, DrawChunkFlags flags) {
@@ -109,14 +122,32 @@ void World::draw_all(Texture &atlas, DrawChunkFlags flags) {
 void World::update_active_meshes() {
     // if (!activeChunks.empty())
     //     printf("[WORLD] Meshed chunks: %lu\n", activeChunks.size());
-    const u_short UPDATES_PER_FRAME = 100;
-    for (int i = 0; i < UPDATES_PER_FRAME; i++) {
-        if (!activeChunks.empty()) {
-            auto it = activeChunks.begin();
-            get_chunk_raw_access(*it).generate_mesh();
-            activeChunks.erase(it);
-        }
-    }
+    // const u_short UPDATES_PER_FRAME = 100;
+    // for (int i = 0; i < UPDATES_PER_FRAME; i++) {
+    //     if (!activeChunks.empty()) {
+    //         auto it = activeChunks.begin();
+    //         get_chunk_raw_access(*it).generate_mesh();
+    //         activeChunks.erase(it);
+    //     }
+    // }
+
+    // BUGGY ======================
+    // std::vector<std::thread> threads;
+    // threads.reserve(activeChunks.size());
+    // for (auto &it : activeChunks) {
+    //     threads.emplace_back([this](const Cord _cord) { get_chunk_raw_access(_cord).generate_mesh(); }, it);
+    // }
+    //
+    // for (auto &th : threads) {
+    //     th.join();
+    // }
+    //
+    // activeChunks.clear();
+    // SLOW ===================
+    std::for_each(std::execution::par_unseq, activeChunks.begin(), activeChunks.end(), [this](Cord cordIt) {
+        get_chunk_raw_access(cordIt).generate_mesh();
+    });
+    activeChunks.clear();
 }
 
 void World::update_simulations() {
