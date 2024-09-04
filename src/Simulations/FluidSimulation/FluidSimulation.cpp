@@ -125,7 +125,14 @@ void  FluidSimulation::remove_empty_fluids() {
     for (int i = 0; i < fluidsToCheck; i++) {
         auto akt = activeFluids.front();
         activeFluids.pop_front();
-        auto *currFluid = dynamic_cast<Fluid *>(world.get_block(akt.x, akt.y, akt.z));
+        Block* currBlock= world.get_block(akt.x, akt.y, akt.z);
+
+        // BLock has been replaced, forget about it.
+        if (currBlock->getType() != BlockType::Fluid) {
+            continue;
+        }
+
+        auto *currFluid = dynamic_cast<Fluid*>(currBlock);
         bool   isActive  = currFluid->mass != currFluid->newMass;
         currFluid->mass  = currFluid->newMass;
 
