@@ -203,7 +203,6 @@ void Chunk::generate_mesh() {
     chunkMeshRef.triangleCount = indexCount; // change it
     chunkMeshRef.vertexCount = vertexCount;
 
-    printf("Uploading mesh %d %d %d\n", cords.x, cords.y, cords.z);
     UploadMesh(model.meshes, true);
     // boundingBox = GetMeshBoundingBox(chunkMeshRef);
 }
