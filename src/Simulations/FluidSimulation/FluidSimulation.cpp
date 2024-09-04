@@ -46,13 +46,15 @@ void FluidSimulation::update() {
 
     size_t initFluids = activeFluids.size();
     for (int i = 0; i < initFluids; i++) {
-        const auto currCords = activeFluids[i];
-        auto      *curr      = dynamic_cast<Fluid *>(world.get_block(currCords.x, currCords.y, currCords.z));
-        auto       currType  = curr->getType();
+        const auto currCords     = activeFluids[i];
+        auto      *currBlockTemp = world.get_block(currCords.x, currCords.y, currCords.z);
+        auto       currType      = currBlockTemp->getType();
 
         if (currType != BlockType::Fluid) {
             continue; // FLuid has been repalced by block (or air)
         }
+
+        auto *curr = dynamic_cast<Fluid *>(world.get_block(currCords.x, currCords.y, currCords.z));
 
         // Actual simulation over fluids
         float flow          = 0;
