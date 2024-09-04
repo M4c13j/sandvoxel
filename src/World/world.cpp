@@ -16,7 +16,7 @@ void World::print_size_report() const {
     // std::cout << "Block size: " << sizeof(chunks[0][0][0].]) << " bytes \n";
 }
 
-World::World() : fluidSim(*this) {
+World::World() : fluidSim(*this), sandSim(*this) {
     float heightOffset = (-1) * config::MAP_HEIGHT_IN_BLOCKS / 2;
     float normalOffset = (-1) * (float)config::CHUNK_SIZE * side / 2;
     drawOffset         = {normalOffset, heightOffset, normalOffset};
@@ -124,6 +124,7 @@ void World::update_active_meshes() {
 
 void World::update_simulations() {
     fluidSim.update();
+    sandSim.update();
 }
 
 void World::update() {
