@@ -123,7 +123,7 @@ void Chunk::check_visible_faces() {
             for (int z = 0; z < config::CHUNK_SIZE; z++) {
                 Block *curr  = blocks[x][y][z];
                 curr->visible = 0;
-                if (curr->isTransparent())
+                if (curr->getType() == BlockType::Air)
                     continue; // do not draw Air
 
                 Cord pos{x, y, z};
