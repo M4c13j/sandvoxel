@@ -6,14 +6,10 @@
 
 class World;
 class SandSimulation : Simulation {
-    float  tickPerSecond  = 1; // simulation rounds per sceond
-    int    tickTimeDiff   = 1.0f / tickPerSecond;
-    double lastUpdateTime = 0.0f;
-
     std::deque<Cord> activeSand;
 
 public:
-    explicit SandSimulation(World &world) : Simulation(world){};
+    explicit SandSimulation(World &world) : Simulation(world, 2){};
     void     addBlock(int x, int y, int z) override;
     void     addBlock(Cord cord) override;
     void     update() override;

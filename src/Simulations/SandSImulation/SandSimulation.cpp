@@ -23,7 +23,7 @@ static int randint(int a, int b) {
 void SandSimulation::clearCurrentBLock(Cord curr) const { world.setBlock(curr.x, curr.y, curr.z, BlockType::Air); }
 
 void SandSimulation::update() {
-    if (!shouldUpdate())
+    if (!this->shouldUpdate())
         return; // do not update yet
     lastUpdateTime = GetTime();
 
@@ -55,9 +55,12 @@ void SandSimulation::update() {
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
+                if (dx == 0 && dx == 0)
+                    continue;
                 Cord subDir = currCords + (Cord){dx, -1, dz};
                 auto bl = world.get_block(subDir.x, subDir.y, subDir.z);
-                if (bl->getType() == BlockType::Air) {
+                auto ab = world.get_block(subDir.x, subDir.y +1, subDir.z);
+                if (bl->getType() == BlockType::Air && ab->getType() == BlockType::Air) {
                     possibleDirs.push_back(subDir);
                 }
             }
@@ -70,7 +73,6 @@ void SandSimulation::update() {
 
         Cord cordToFall = possibleDirs[randint(0, possibleDirs.size()-1)];
         assert(world.get_block(cordToFall.x, cordToFall.y, cordToFall.z)->getType() == BlockType::Air);
-
         clearCurrentBLock(currCords);
         addBlock(cordToFall);
     }

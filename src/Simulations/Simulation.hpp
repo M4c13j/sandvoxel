@@ -7,13 +7,16 @@ class World;
 // Interface for Simulation implementations.
 class Simulation {
 protected:
-    float  tickPerSecond  = 1.0f;
-    int    tickTimeDiff   = 1.0f / tickPerSecond;
-    double lastUpdateTime = 0.0f;
+    float  ticksPerSecond;
+    int    tickTimeDiff;
+    double lastUpdateTime;
 
     World &world;
 
-    Simulation(World &world) : world(world){};
+    Simulation(World &world, float ticksPerSecond) : world(world), ticksPerSecond(ticksPerSecond) {
+        tickTimeDiff   = 1.0 / ticksPerSecond;
+        lastUpdateTime = 0.0f;
+    };
 
 public:
     virtual ~    Simulation()                  = default;
