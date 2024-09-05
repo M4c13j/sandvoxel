@@ -22,10 +22,14 @@ class FluidSimulation : Simulation {
 
     const float MAX_SPEED = 1;
 
+    float  tickPerSecond  = 1.5; // simulation rounds per sceond
+    int    tickTimeDiff   = 1.0f / tickPerSecond;
+    double lastUpdateTime = 0.0f;
+
     std::deque<Cord> activeFluids;
 
 public:
-    explicit FluidSimulation(World &world) : Simulation(world, 1){};
+    explicit FluidSimulation(World &world) : Simulation(world, 2){};
     void     addBlockInitMass(int x, int y, int z, float mass);
     void     addBlockInitMass(Cord cord, float mass);
     void     addBlock(int x, int y, int z) override;

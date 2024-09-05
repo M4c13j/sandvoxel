@@ -29,8 +29,9 @@ void SandSimulation::update() {
 
     size_t activeSandCount = activeSand.size();
     for (int i = 0; i < activeSandCount; i++) {
-        // Cord  currCords     = activeSand[i];
-        Cord currCords = activeSand.front(); activeSand.pop_front();
+        Cord  currCords     = activeSand[i]; // TODO: Optimise it, version below is optimal, current it NOT (doesnt clear unsued sand),
+        // Probably block activation should be added.
+        // Cord currCords = activeSand.front(); activeSand.pop_front();
         auto *currBlockTemp = world.get_block(currCords.x, currCords.y, currCords.z);
         auto  currType      = currBlockTemp->getType();
 
@@ -55,7 +56,7 @@ void SandSimulation::update() {
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                if (dx == 0 && dx == 0)
+                if (dx == 0 && dz == 0)
                     continue;
                 Cord subDir = currCords + (Cord){dx, -1, dz};
                 auto bl = world.get_block(subDir.x, subDir.y, subDir.z);
