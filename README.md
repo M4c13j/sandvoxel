@@ -11,8 +11,11 @@ Projects main goal is to create efficient and good looking dynamic sand simulati
 - `perf` and `gprof` for profiling
 
 ## Screens and recordings
-#### Showcase video 
-![CLICK HERE](https://youtu.be/Bz357Av9Bb0) \
+### Showcase video 
+[**CLICK HERE**](https://youtu.be/Bz357Av9Bb0) \
+[**CLICK HERE**](https://youtu.be/Bz357Av9Bb0) \
+
+### Images
 ![](resources/textures/dirt_plank.png) \
 ![](resources/textures/gosling.jpg)
 
