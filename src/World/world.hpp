@@ -44,9 +44,9 @@ public:
 
     // returns block from given cordinates(world cordinates)
     Block *get_block(int x, int y, int z) {
-        return get_chunk(x, y, z).get_block(((x % config::CHUNK_SIZE) + 16) % config::CHUNK_SIZE,
-                                            ((y % config::CHUNK_SIZE) + 16) % config::CHUNK_SIZE,
-                                            ((z % config::CHUNK_SIZE) + 16) % config::CHUNK_SIZE);
+        return get_chunk(x, y, z).get_block(((x % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
+                                            ((y % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
+                                            ((z % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE);
     }
     Block *get_block_neigh(int x, int y, int z, Dir dir) {
         return get_block(x + FACE_NORMALS[dir].x, y + FACE_NORMALS[dir].y, z + FACE_NORMALS[dir].z);
@@ -88,9 +88,9 @@ public:
     void setBlock(int x, int y, int z, const BlockType newType) {
         if (get_block(x, y, z)->getType() != newType) {
             blockHasBeenModified(x, y, z);
-            get_chunk(x, y, z).setBlockType(((x % config::CHUNK_SIZE) + 16) % config::CHUNK_SIZE,
-                                            ((y % config::CHUNK_SIZE) + 16) % config::CHUNK_SIZE,
-                                            ((z % config::CHUNK_SIZE) + 16) % config::CHUNK_SIZE, newType);
+            get_chunk(x, y, z).setBlockType(((x % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
+                                            ((y % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
+                                            ((z % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE, newType);
         }
     }
 

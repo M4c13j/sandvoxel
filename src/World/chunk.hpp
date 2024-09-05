@@ -23,11 +23,11 @@ enum DrawChunkFlags {
 
 
 // Whether nonEmptyBlocks and visibleFaces make any sense BLOCKS in chunk TIMES faces
-static_assert(config::BLOCKS_IN_CHUNK * 6 <= UINT16_MAX, "Total number of visible faces may not fit in uint16.");
+// static_assert(config::BLOCKS_IN_CHUNK * 6 <= UINT16_MAX, "Total number of visible faces may not fit in uint16.");
 class Chunk {
 public:
-    uint16_t    nonEmptyBlocks        = 0;
-    uint16_t    visibleFaces          = 0;
+    uint nonEmptyBlocks        = 0;
+    uint visibleFaces          = 0;
     int         id                    = 0;
     MeshType    meshType              = MESH_COLORED;
     Cord        cords                 = {0, 0, 0}; // x,z - grid. y - height offset

@@ -29,7 +29,8 @@ void SandSimulation::update() {
 
     size_t activeSandCount = activeSand.size();
     for (int i = 0; i < activeSandCount; i++) {
-        Cord  currCords     = activeSand[i];
+        // Cord  currCords     = activeSand[i];
+        Cord currCords = activeSand.front(); activeSand.pop_front();
         auto *currBlockTemp = world.get_block(currCords.x, currCords.y, currCords.z);
         auto  currType      = currBlockTemp->getType();
 

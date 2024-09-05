@@ -53,9 +53,10 @@ int main(int argc, char** argv)
 
 
     bool DAWG = true; // to skip initial lag
-    float startTime = GetTime() + 5.0f; // count from now, just before main loop
-    const float deltaPeriod = 0.0f;
-    const float stopTime = startTime + 2;
+    float startTimefl = GetTime() + 5.0f; // count from now, just before main loop
+    float startTimesa = GetTime() + 2.0f;
+    float stopTimesa = GetTime() + 100;
+    const float stopTimefl = startTimefl + 2;
     //==================================== RLGL (opengl abstr) changes ============================================
     rlSetLineWidth(3.0f); // lines are finally more visible and not as annoying
     // rlEnableWireMode(); // Draw wires only!
@@ -64,16 +65,29 @@ int main(int argc, char** argv)
     while (!WindowShouldClose()) {
 
         // FLUID DEMO ==================================================================================================
-        if (GetTime() > startTime && GetTime() < stopTime && DAWG) {
+        // if (GetTime() > startTimefl && GetTime() < stopTimefl && DAWG) {
+        //     for (int x = -4; x <= 4; x++) {
+        //         for (int z = 6; z <= 10; z++) {
+        //             world->fluidSim.addBlock(x, 15, z);
+        //         }
+        //     }
+        //     // world->addFluid(-4, 20, 9);
+        //     startTimefl += 0.1;
+        //     // DAWG = false;
+        // }
+
+        // SAND DEMO =================================================
+        if (GetTime() > startTimesa && GetTime() < stopTimesa && DAWG) {
             for (int x = -4; x <= 4; x++) {
                 for (int z = 6; z <= 10; z++) {
-                    world->fluidSim.addBlock(x, 15, z);
-                    world->sandSim.addBlock(x+10, 15+10, z+10);
+                    world->sandSim.addBlock(x-10, 15-10, z-10);
+                    world->sandSim.addBlock(x-10, 15-10+1, z-10);
                 }
             }
-            // world->addFluid(-4, 20, 9);
-            startTime += deltaPeriod;
-            // DAWG = false;
+            world->sandSim.addBlock(-15-10, 30, -15-10);
+            // world->sandSim.addBlock(-15-10, 15-10+2, -15-10);
+            // world->sandSim.addBlock(-15-10, 15-10+1, -15-10);
+            startTimesa += 0.1f;
         }
 
         // UPDATE WORLD AND SIMULATION =================================================================================
