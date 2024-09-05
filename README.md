@@ -10,7 +10,9 @@ Projects main goal is to create efficient and good looking dynamic sand simulati
 - smaller libraries (i.e. for Perlin noise),
 - `perf` and `gprof` for profiling
 
-## Screenshots
+## Screens and recordings
+#### Showcase video 
+![CLICK HERE](https://youtu.be/Bz357Av9Bb0) \
 ![](resources/textures/dirt_plank.png) \
 ![](resources/textures/gosling.jpg)
 
@@ -20,7 +22,7 @@ Projects main goal is to create efficient and good looking dynamic sand simulati
 - [x] Texture and colored voxel faces rendering depending on block type
 - [x] Inteface for editing the world through World class, not direct chunk access etc.
 - [x] Fluid simulation
-- [ ] Sand simulation
+- [x] Sand simulation
 - [ ] Basic physics and collisions
 - [ ] Walking mechanics
 - [ ] Sprites and NPC's
