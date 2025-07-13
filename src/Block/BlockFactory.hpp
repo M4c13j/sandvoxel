@@ -25,10 +25,17 @@ public:
     }
 
     void initBlocks() {
-        Air().init();
-        Sand().init();
-        Grass().init();
-        Fluid().init();
+        // Initialize static data for each block type without creating temporary objects
+        static Air air_instance;
+        static Sand sand_instance;
+        static Grass grass_instance;
+        static Fluid fluid_instance;
+        
+        air_instance.init();
+        sand_instance.init();
+        grass_instance.init();
+        fluid_instance.init();
+        
         classesInitialised = true;
 
         // if sizes dont match, create variable of maximal size
