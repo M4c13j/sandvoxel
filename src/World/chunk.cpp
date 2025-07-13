@@ -33,6 +33,14 @@ void Chunk::init_blocks() {
 }
 
 Chunk::~Chunk() {
+    // Clean up all blocks to prevent memory leaks
+    for (int i = 0; i < config::CHUNK_SIZE; i++) {
+        for (int j = 0; j < config::CHUNK_SIZE; j++) {
+            for (int k = 0; k < config::CHUNK_SIZE; k++) {
+                delete blocks[i][j][k];
+            }
+        }
+    }
     // UnloadModel(model);
 }
 

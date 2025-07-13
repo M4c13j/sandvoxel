@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <deque>
 #include <queue>
 #include <set>
@@ -42,11 +43,12 @@ public:
 
     void generate_perlin_chunks(uint_fast32_t seed);
 
-    // returns block from given cordinates(world cordinates)
+    // returns block from given coordinates (world coordinates)
     Block *get_block(int x, int y, int z) {
-        return get_chunk(x, y, z).get_block(((x % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
-                                            ((y % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
-                                            ((z % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE);
+        // Optimize: use bitwise operations since CHUNK_SIZE is power of 2
+        static_assert((config::CHUNK_SIZE & (config::CHUNK_SIZE - 1)) == 0, "CHUNK_SIZE must be power of 2");
+        const int mask = config::CHUNK_SIZE - 1;
+        return get_chunk(x, y, z).get_block(x & mask, y & mask, z & mask);
     }
     Block *get_block_neigh(int x, int y, int z, Dir dir) {
         return get_block(x + FACE_NORMALS[dir].x, y + FACE_NORMALS[dir].y, z + FACE_NORMALS[dir].z);
@@ -88,9 +90,9 @@ public:
     void setBlock(int x, int y, int z, const BlockType newType) {
         if (get_block(x, y, z)->getType() != newType) {
             blockHasBeenModified(x, y, z);
-            get_chunk(x, y, z).setBlockType(((x % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
-                                            ((y % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE,
-                                            ((z % config::CHUNK_SIZE) + config::CHUNK_SIZE) % config::CHUNK_SIZE, newType);
+            // Optimize: use bitwise operations since CHUNK_SIZE is power of 2
+            const int mask = config::CHUNK_SIZE - 1;
+            get_chunk(x, y, z).setBlockType(x & mask, y & mask, z & mask, newType);
         }
     }
 

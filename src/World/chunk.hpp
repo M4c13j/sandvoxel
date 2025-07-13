@@ -4,6 +4,7 @@
 #include "../config.hpp"
 #include "raylib.h"
 
+#include <cstdint>
 #include <vector>
 
 // Whether mesh should be drawn with texture or nah
@@ -26,8 +27,8 @@ enum DrawChunkFlags {
 // static_assert(config::BLOCKS_IN_CHUNK * 6 <= UINT16_MAX, "Total number of visible faces may not fit in uint16.");
 class Chunk {
 public:
-    uint nonEmptyBlocks        = 0;
-    uint visibleFaces          = 0;
+    uint32_t nonEmptyBlocks        = 0;
+    uint32_t visibleFaces          = 0;
     int         id                    = 0;
     MeshType    meshType              = MESH_COLORED;
     Cord        cords                 = {0, 0, 0}; // x,z - grid. y - height offset
