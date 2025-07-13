@@ -20,7 +20,7 @@ static int randint(int a, int b) {
     return distribution(rng);
 }
 
-void SandSimulation::clearCurrentBLock(Cord curr) const { world.setBlock(curr.x, curr.y, curr.z, BlockType::Air); }
+void SandSimulation::clearCurrentBlock(Cord curr) const { world.setBlock(curr.x, curr.y, curr.z, BlockType::Air); }
 
 void SandSimulation::update() {
     if (!this->shouldUpdate())
@@ -43,7 +43,7 @@ void SandSimulation::update() {
 
         // Air below, free fall
         if (world.get_block_neigh(currCords.x, currCords.y, currCords.z, DIR_DOWN)->getType() == BlockType::Air) {
-            clearCurrentBLock(currCords);
+            clearCurrentBlock(currCords);
             currCords.add_dir(DIR_DOWN);
             addBlock(currCords);
             currCords.add_dir(DIR_UP);
@@ -74,7 +74,7 @@ void SandSimulation::update() {
 
         Cord cordToFall = possibleDirs[randint(0, possibleDirs.size()-1)];
         assert(world.get_block(cordToFall.x, cordToFall.y, cordToFall.z)->getType() == BlockType::Air);
-        clearCurrentBLock(currCords);
+        clearCurrentBlock(currCords);
         addBlock(cordToFall);
     }
 

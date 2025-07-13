@@ -22,9 +22,9 @@ class FluidSimulation : Simulation {
 
     const float MAX_SPEED = 1;
 
-    float  tickPerSecond  = 1.5; // simulation rounds per sceond
-    int    tickTimeDiff   = 1.0f / tickPerSecond;
-    double lastUpdateTime = 0.0f;
+    float  tickPerSecond  = 1.5f; // simulation rounds per second
+    float  tickTimeDiff   = 1.0f / tickPerSecond;
+    double lastUpdateTime = 0.0;
 
     std::deque<Cord> activeFluids;
 

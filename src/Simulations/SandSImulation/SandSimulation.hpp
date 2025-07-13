@@ -13,9 +13,9 @@ public:
     void     addBlock(int x, int y, int z) override;
     void     addBlock(Cord cord) override;
     void     update() override;
-    void     addSource(int x, int y, int z, int strenghInTicks);
+    void     addSource(int x, int y, int z, int strengthInTicks);
     void removeInactive();
 
 private:
-    void clearCurrentBLock(Cord cord) const;
+    void clearCurrentBlock(Cord cord) const;
 };
