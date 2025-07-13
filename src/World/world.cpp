@@ -85,7 +85,9 @@ void World::mesh_all_chunks() {
     // std::fill
     int n = 0;
     std::generate(allCords.begin(), allCords.end(), [&n, this] {
-        return Cord{n / (side * height), (n/side) % height, (n++) % side};
+        return Cord{static_cast<int>(n / (side * height)), 
+                   static_cast<int>((n/side) % height), 
+                   static_cast<int>((n++) % side)};
     });
 
     std::for_each(std::execution::par_unseq, allCords.begin(), allCords.end(), [this](Cord cordIt) {

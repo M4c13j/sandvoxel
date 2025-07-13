@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 
+#include <cstdint>
 #include <string>
 
 constexpr int VERTEX_DATA_PER_FACE  = 3 * 4; // for vertices and normals

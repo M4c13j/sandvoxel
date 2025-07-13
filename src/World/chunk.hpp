@@ -4,6 +4,7 @@
 #include "../config.hpp"
 #include "raylib.h"
 
+#include <cstdint>
 #include <vector>
 
 // Whether mesh should be drawn with texture or nah
